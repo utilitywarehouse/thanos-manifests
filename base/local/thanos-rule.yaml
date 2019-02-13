@@ -1,0 +1,150 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-rule
+spec:
+  rules:
+  - host: thanos-rule.example
+    http:
+      paths:
+      - backend:
+          serviceName: thanos-rule
+          servicePort: 10902
+        path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
+  labels:
+    app: thanos-rule
+  name: thanos-rule
+spec:
+  ports:
+  - port: 10902
+    protocol: TCP
+    targetPort: http
+    name: http-rule
+  - port: 10901
+    protocol: TCP
+    targetPort: grpc
+    name: grpc-rule
+  selector:
+    app: thanos-rule
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos
+data:
+  query-sd.yaml: |-
+    - targets:
+      - thanos-query.namespace:9090
+      labels:
+        team: team
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-rule
+  labels:
+    app: thanos-rule
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: thanos-rule
+  template:
+    metadata:
+      labels:
+        app: thanos-rule
+    spec:
+      containers:
+      - name: thanos-rule
+        image: improbable/thanos:master-2019-02-06-33b57f6
+        args:
+        - rule
+        - --log.level=info
+        - --data-dir=/var/thanos/data/
+        - --rule-file=/var/thanos/rules/*.yaml
+        - --alertmanagers.url=$(ALERTMANAGER_URL)
+        - --eval-interval=30s
+        - --alert.query-url=$(THANOS_QUERY_URL)
+        - --query.sd-files=/etc/thanos/query-sd.yaml
+        - --cluster.disable
+        env:
+        - name: ALERTMANAGER_URL
+          value: "dns+http://alertmanager.base"
+        - name: THANOS_QUERY_URL
+          value: "https://thanos-query.example"
+        ports:
+        - name: http
+          containerPort: 10902
+        - name: grpc
+          containerPort: 10901
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: http
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          failureThreshold: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: http
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 10
+          failureThreshold: 5
+        volumeMounts:
+        - name: data
+          mountPath: /var/thanos/data
+        - name: rules
+          mountPath: /var/thanos/rules
+        - name: config
+          mountPath: /etc/thanos
+        resources:
+          requests:
+            cpu: 50m
+            memory: 200Mi
+          limits:
+            memory: 500Mi
+      - name: config-watch
+        image: alpine
+        resources:
+          requests:
+            cpu: 0m
+            memory: 0Mi
+          limits:
+            memory: 32Mi
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo '#!/bin/sh
+            if [ "$#" -eq 3 ] && [ "$3" == "..data" ]; then
+                echo "[" $(date -uIseconds) "] config seems to have changed, reloading ..."
+                /usr/bin/wget -q -O- --post-data "" http://localhost:10902/-/reload
+            fi' > /reload && chmod +x /reload && inotifyd /reload /var/thanos/rules:y
+        volumeMounts:
+        - name: rules
+          mountPath: /var/thanos/rules
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: rules
+        configMap:
+          defaultMode: 420
+          name: prometheus-alerts
+      - name: config
+        configMap:
+          name: thanos

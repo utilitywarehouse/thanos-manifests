@@ -1,0 +1,212 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+spec:
+  rules:
+  - host: prometheus.example
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/affinity: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
+  labels:
+    name: prometheus
+  name: prometheus
+spec:
+  ports:
+  - name: prometheus
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: prometheus
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: thanos-sidecar
+  name: thanos-sidecar
+spec:
+  clusterIP: None
+  selector:
+    app: prometheus
+  ports:
+  - name: grpc
+    port: 10901
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: prometheus
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: prometheus
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    role: prometheus
+spec:
+  podManagementPolicy: Parallel
+  replicas: 2
+  selector:
+    matchLabels:
+      app: prometheus
+      role: prometheus
+  serviceName: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        role: prometheus
+      name: prometheus
+    spec:
+      terminationGracePeriodSeconds: 1200
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - prometheus
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - name: thanos-sidecar
+        image: improbable/thanos:master-2019-02-06-33b57f6
+        args:
+        - sidecar
+        - --log.level=info
+        - --prometheus.url=http://127.0.0.1:9090
+        - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
+        - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
+        - --tsdb.path=/prometheus/data
+        - --reloader.rule-dir=/etc/alerts/..data/
+        - --objstore.config-file=/etc/thanos/config.yaml
+        - --cluster.disable
+        ports:
+        - name: http
+          containerPort: 10902
+        - name: grpc
+          containerPort: 10901
+        - name: cluster
+          containerPort: 10900
+        volumeMounts:
+        - name: prometheus
+          mountPath: /prometheus
+        - name: config-shared
+          mountPath: /etc/prometheus-shared
+        - name: config-volume
+          mountPath: /etc/prometheus
+        - name: alerts-volume
+          mountPath: /etc/alerts
+        - name: config-volume
+          mountPath: /etc/thanos
+      - name: prometheus
+        args:
+        - --log.level=info
+        - --config.file=/etc/prometheus-shared/prometheus.yaml
+        - --storage.tsdb.path=/prometheus/data
+        - --storage.tsdb.retention=2d
+        - --storage.tsdb.min-block-duration=2h
+        - --storage.tsdb.max-block-duration=2h
+        - --web.external-url=$(PROMETHEUS_URL)
+        - --web.enable-lifecycle
+        - --web.console.libraries=/usr/share/prometheus/console_libraries
+        - --web.console.templates=/usr/share/prometheus/consoles
+        env:
+        - name: PROMETHEUS_URL
+          value: "https://prometheus.fake"
+        image: prom/prometheus:v2.7.1
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /-/healthy
+            port: web
+            scheme: HTTP
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 1
+        ports:
+        - containerPort: 9090
+          name: web
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /-/ready
+            port: web
+            scheme: HTTP
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 250m
+            memory: 8Gi
+          limits:
+            memory: 10Gi
+        volumeMounts:
+        - mountPath: /etc/prometheus
+          name: config-volume
+        - mountPath: /etc/prometheus-shared
+          name: config-shared
+        - mountPath: /etc/alerts
+          name: alerts-volume
+        - mountPath: /prometheus
+          name: prometheus
+      securityContext:
+        runAsUser: 0
+      serviceAccount: prometheus
+      serviceAccountName: prometheus
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: prometheus
+        name: config-volume
+      - name: alerts-volume
+        configMap:
+          defaultMode: 420
+          name: thanos-rule-alert
+      - name: config-shared
+        emptyDir: {}
+      - name: config-volume
+        secret:
+          secretName: prometheus-secrets
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 200Gi
+---
