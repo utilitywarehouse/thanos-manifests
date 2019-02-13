@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-compact
+  name: thanos-compact
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
+spec:
+  ports:
+  - port: 10902
+    protocol: TCP
+    targetPort: http
+    name: http-query
+  selector:
+    app: thanos-compact
+  sessionAffinity: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-compact
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thanos-compact
+  template:
+    metadata:
+      labels:
+        app: thanos-compact
+      name: thanos-compact
+    spec:
+      terminationGracePeriodSeconds: 1200
+      containers:
+      - name: thanos-compact
+        image: improbable/thanos:master-2019-02-06-33b57f6
+        args:
+        - compact
+        - --log.level=debug
+        - --data-dir=/var/thanos/compact
+        - --wait
+        - --sync-delay=30m
+        - --objstore.config-file=/etc/thanos/config.yaml
+        ports:
+        - name: http
+          containerPort: 10902
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: http
+            scheme: HTTP
+          periodSeconds: 90
+          successThreshold: 1
+          failureThreshold: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: http
+            scheme: HTTP
+          periodSeconds: 90
+          successThreshold: 1
+          failureThreshold: 5
+          timeoutSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /var/thanos/compact
+        - name: config-volume
+          mountPath: /etc/thanos
+        resources:
+          requests:
+            cpu: 0
+            memory: 1Gi
+          limits:
+            memory: 5Gi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: thanos-compact
+      - name: config-volume
+        secret:
+          secretName: prometheus-secrets
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thanos-compact
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+---
