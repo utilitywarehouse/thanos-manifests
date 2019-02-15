@@ -8,3 +8,5 @@ resources:
   - thanos-rule.yaml
   - prometheus.yaml
   - thanos-storage-secret.yaml
+  - alerts.yaml
+  - prometheus-alerts.yaml

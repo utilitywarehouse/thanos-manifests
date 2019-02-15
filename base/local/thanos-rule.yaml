@@ -144,7 +144,7 @@ spec:
       - name: rules
         configMap:
           defaultMode: 420
-          name: prometheus-alerts
+          name: alerts
       - name: config
         configMap:
           name: thanos

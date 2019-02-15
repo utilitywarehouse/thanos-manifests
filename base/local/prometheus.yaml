@@ -192,7 +192,7 @@ spec:
       - name: alerts-volume
         configMap:
           defaultMode: 420
-          name: thanos-rule-alert
+          name: prometheus-alerts
       - name: config-shared
         emptyDir: {}
       - name: config-volume
