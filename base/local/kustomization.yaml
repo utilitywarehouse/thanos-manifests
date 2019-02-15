@@ -7,4 +7,4 @@ resources:
   - thanos-store.yaml
   - thanos-rule.yaml
   - prometheus.yaml
-  - prometheus-secrets.yaml
+  - thanos-storage-secret.yaml

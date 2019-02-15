@@ -82,4 +82,4 @@ spec:
         emptyDir: {}
       - name: config-volume
         secret:
-          secretName: prometheus-secrets
+          secretName: thanos-storage

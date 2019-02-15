@@ -8,4 +8,4 @@ patchesStrategicMerge:
 - thanos-rule.yaml
 - thanos-compact.yaml
 - prometheus.yaml
-- prometheus-secrets.yaml
+- thanos-storage-secret.yaml
