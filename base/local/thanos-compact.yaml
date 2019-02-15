@@ -85,7 +85,7 @@ spec:
           claimName: thanos-compact
       - name: config-volume
         secret:
-          secretName: prometheus-secrets
+          secretName: thanos-storage
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
