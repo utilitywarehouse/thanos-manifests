@@ -6,4 +6,4 @@ spec:
   resources:
     requests:
       storage: 250Gi
-  storageClassName: ebs-gp2
+  storageClassName: ebs-gp3
