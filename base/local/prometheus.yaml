@@ -124,7 +124,7 @@ spec:
           mountPath: /etc/prometheus
         - name: alerts-volume
           mountPath: /etc/alerts
-        - name: config-volume
+        - name: thanos-config-volume
           mountPath: /etc/thanos
       - name: prometheus
         args:
@@ -185,17 +185,17 @@ spec:
       serviceAccount: prometheus
       serviceAccountName: prometheus
       volumes:
-      - configMap:
+      - name: config-volume
+        configMap:
           defaultMode: 420
           name: prometheus
-        name: config-volume
       - name: alerts-volume
         configMap:
           defaultMode: 420
           name: prometheus-alerts
       - name: config-shared
         emptyDir: {}
-      - name: config-volume
+      - name: thanos-config-volume
         secret:
           secretName: thanos-storage
   updateStrategy:

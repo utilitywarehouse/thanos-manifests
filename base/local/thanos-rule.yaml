@@ -78,9 +78,9 @@ spec:
         - --cluster.disable
         env:
         - name: ALERTMANAGER_URL
-          value: "dns+http://alertmanager.base"
+          value: "dns+http://alertmanager.sys-mon"
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.example"
+          value: "https://thanos-query.sys-mon"
         ports:
         - name: http
           containerPort: 10902
