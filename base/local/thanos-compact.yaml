@@ -97,5 +97,4 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: ebs-gp2
 ---
