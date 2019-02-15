@@ -43,9 +43,9 @@ metadata:
 data:
   query-sd.yaml: |-
     - targets:
-      - thanos-query.namespace:9090
+      - thanos-query.sys-mon:9090
       labels:
-        team: team
+        team: infra
 ---
 apiVersion: apps/v1
 kind: Deployment
