@@ -74,12 +74,19 @@ spec:
         resources:
           requests:
             cpu: 50m
-            memory: 2Gi
+            memory: 5Gi
           limits:
-            memory: 4Gi
+            memory: 6Gi
       volumes:
-      - name: data
-        emptyDir: {}
       - name: config-volume
         secret:
           secretName: thanos-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
