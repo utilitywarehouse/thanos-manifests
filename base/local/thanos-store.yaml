@@ -35,19 +35,19 @@ spec:
     spec:
       containers:
       - name: thanos-store
-        image: improbable/thanos:master-2019-02-06-33b57f6
+        image: quay.io/utilitywarehouse/thanos:store-skip-window-2019-03-26-9b94cda
         args:
         - store
         - --log.level=info
         - --data-dir=/var/thanos/store
         - --objstore.config-file=/etc/thanos/config.yaml
         - --cluster.disable
+        - --skip-window=47h
         ports:
         - name: http
           containerPort: 10902
         - name: grpc
           containerPort: 10901
-        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /metrics

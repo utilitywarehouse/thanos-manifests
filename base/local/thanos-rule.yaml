@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
       - name: thanos-rule
-        image: improbable/thanos:master-2019-02-06-33b57f6
+        image: improbable/thanos:master-2019-03-26-7465db9
         args:
         - rule
         - --log.level=info
@@ -86,7 +86,6 @@ spec:
           containerPort: 10902
         - name: grpc
           containerPort: 10901
-        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /metrics
