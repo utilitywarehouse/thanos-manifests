@@ -38,7 +38,7 @@ spec:
       terminationGracePeriodSeconds: 1200
       containers:
       - name: thanos-compact
-        image: improbable/thanos:master-2019-02-06-33b57f6
+        image: improbable/thanos:master-2019-03-26-7465db9
         args:
         - compact
         - --log.level=debug
@@ -49,7 +49,6 @@ spec:
         ports:
         - name: http
           containerPort: 10902
-        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /metrics
@@ -78,7 +77,7 @@ spec:
             cpu: 0
             memory: 1Gi
           limits:
-            memory: 5Gi
+            memory: 2Gi
       volumes:
       - name: data
         persistentVolumeClaim:
