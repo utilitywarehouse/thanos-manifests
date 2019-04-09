@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: prometheus
 data:
+  # This is an example and needs to be overwritten by strategicMergePatch
   prometheus.yaml.tmpl: |
     global:
       external_labels:

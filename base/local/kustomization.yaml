@@ -3,10 +3,11 @@ kind: Kustomization
 commonLabels:
   service: monitoring
 resources:
-  - thanos-compact.yaml
-  - thanos-store.yaml
-  - thanos-rule.yaml
-  - prometheus.yaml
-  - thanos-storage-secret.yaml
-  - alerts.yaml
-  - prometheus-alerts.yaml
+- thanos-compact.yaml
+- thanos-store.yaml
+- thanos-rule.yaml
+- prometheus.yaml
+- prometheus-configmap.yaml
+- thanos-storage-secret.yaml
+- alerts.yaml
+- prometheus-alerts.yaml
