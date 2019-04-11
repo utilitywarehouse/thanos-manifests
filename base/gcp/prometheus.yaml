@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+  labels:
+    kubernetes.io/ingress.class: traefik-private
+  annotations:
+    external-dns.alpha.kubernetes.io/target: private-ingress-k8s.dev.gcp.uw.systems
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+spec:
+  template:
+    spec:
+      containers:
+      - name: thanos-sidecar
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/etc/secrets/service-account/credentials.json"
+        volumeMounts:
+        - name: prometheus-storage
+          mountPath: /etc/secrets/service-account/credentials.json
+          subPath: credentials.json

@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-compact
+spec:
+  template:
+    metadata:
+      name: thanos-compact
+    spec:
+      containers:
+      - name: thanos-compact
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/etc/secrets/service-account/credentials.json"
+        volumeMounts:
+        - name: prometheus-storage
+          mountPath: /etc/secrets/service-account/credentials.json
+          subPath: credentials.json

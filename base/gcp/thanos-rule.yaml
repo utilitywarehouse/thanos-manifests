@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-rule
+  labels:
+    kubernetes.io/ingress.class: traefik-private
+  annotations:
+    external-dns.alpha.kubernetes.io/target: private-ingress-k8s.dev.gcp.uw.systems
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-rule
+spec:
+  template:
+    spec:
+      containers:
+      - name: thanos-rule
+        env:
+        - name: ALERTMANAGER_URL
+          value: "dns+http://alertmanager.sys-mon"
+        - name: THANOS_QUERY_URL
+          value: "https://thanos-query.sys-mon"
+---
