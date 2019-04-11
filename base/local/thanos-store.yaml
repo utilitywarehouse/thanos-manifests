@@ -25,6 +25,7 @@ metadata:
     app: thanos-store
 spec:
   replicas: 2
+  serviceName: thanos-store
   selector:
     matchLabels:
       app: thanos-store
