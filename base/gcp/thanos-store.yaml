@@ -13,6 +13,10 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: "/etc/secrets/service-account/credentials.json"
         volumeMounts:
-        - name: prometheus-storage
+        - name: gcp-credentials
           mountPath: /etc/secrets/service-account/credentials.json
           subPath: credentials.json
+      volumes:
+      - name: gcp-credentials
+        secret:
+          secretName: thanos-storage
