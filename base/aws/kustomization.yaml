@@ -4,6 +4,4 @@ bases:
 - github.com/utilitywarehouse/thanos-manifests/base/local?ref=v1.1.9
 patchesStrategicMerge:
 - prometheus.yaml
-- thanos-compact.yaml
 - thanos-rule.yaml
-- thanos-store.yaml
