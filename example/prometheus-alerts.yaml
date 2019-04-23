@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: prometheus-alerts
 data:
-  thanos-rule.conf: |-
+  thanos-rule.yaml: |-
     groups:
     - name: thanos-rule
       rules:
