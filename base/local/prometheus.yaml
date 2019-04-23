@@ -60,6 +60,11 @@ spec:
     matchLabels:
       app: prometheus
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -113,8 +118,6 @@ spec:
           containerPort: 10902
         - name: grpc
           containerPort: 10901
-        - name: cluster
-          containerPort: 10900
         volumeMounts:
         - name: prometheus
           mountPath: /prometheus
@@ -171,14 +174,14 @@ spec:
           limits:
             memory: 10Gi
         volumeMounts:
-        - mountPath: /etc/prometheus
-          name: config-volume
-        - mountPath: /etc/prometheus-shared
-          name: config-shared
-        - mountPath: /etc/alerts
-          name: alerts-volume
-        - mountPath: /prometheus
-          name: prometheus
+        - name: config-volume
+          mountPath: /etc/prometheus
+        - name: config-shared
+          mountPath: /etc/prometheus-shared
+        - name: alerts-volume
+          mountPath: /etc/alerts
+        - name: prometheus
+          mountPath: /prometheus
       securityContext:
         runAsUser: 0
       serviceAccount: prometheus

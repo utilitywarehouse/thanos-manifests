@@ -13,7 +13,7 @@ data:
       evaluation_interval: 60s
       scrape_timeout: 15s
     rule_files:
-      - "/etc/alerts/*.conf"
+      - "/etc/alerts/*.yaml"
     alerting:
       alertmanagers:
       - dns_sd_configs:
