@@ -10,4 +10,4 @@ resources:
 - prometheus-configmap.yaml
 - thanos-storage-secret.yaml
 - alerts.yaml
-- prometheus-alerts.yaml
+- thanos-rule-alerts.yaml
