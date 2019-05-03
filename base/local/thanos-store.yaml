@@ -24,6 +24,7 @@ metadata:
   labels:
     app: thanos-store
 spec:
+  podManagementPolicy: Parallel
   replicas: 2
   serviceName: thanos-store
   selector:
@@ -54,19 +55,19 @@ spec:
             path: /metrics
             port: http
             scheme: HTTP
-          periodSeconds: 30
+          periodSeconds: 20
           successThreshold: 1
-          failureThreshold: 5
+          failureThreshold: 25
           timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /metrics
             port: http
             scheme: HTTP
-          periodSeconds: 30
+          periodSeconds: 20
           successThreshold: 1
           timeoutSeconds: 10
-          failureThreshold: 5
+          failureThreshold: 25
         volumeMounts:
         - name: data
           mountPath: /var/thanos/store
