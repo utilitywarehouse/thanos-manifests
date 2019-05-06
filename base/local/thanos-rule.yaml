@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
       - name: thanos-rule
-        image: improbable/thanos:master-2019-03-26-7465db9
+        image: improbable/thanos:v0.4.0
         args:
         - rule
         - --log.level=info
