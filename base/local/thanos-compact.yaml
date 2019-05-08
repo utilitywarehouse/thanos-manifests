@@ -44,7 +44,7 @@ spec:
         - --log.level=debug
         - --data-dir=/var/thanos/compact
         - --wait
-        - --sync-delay=30m
+        - --consistency-delay=30m
         - --objstore.config-file=/etc/thanos/config.yaml
         ports:
         - name: http
