@@ -38,7 +38,7 @@ spec:
       terminationGracePeriodSeconds: 1200
       containers:
       - name: thanos-compact
-        image: improbable/thanos:master-2019-03-26-7465db9
+        image: improbable/thanos:v0.4.0
         args:
         - compact
         - --log.level=debug

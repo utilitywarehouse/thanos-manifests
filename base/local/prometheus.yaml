@@ -102,7 +102,7 @@ spec:
             weight: 100
       containers:
       - name: thanos-sidecar
-        image: improbable/thanos:master-2019-03-26-7465db9
+        image: improbable/thanos:v0.4.0
         args:
         - sidecar
         - --log.level=info
@@ -144,7 +144,7 @@ spec:
         env:
         - name: PROMETHEUS_URL
           value: "https://prometheus.fake"
-        image: prom/prometheus:v2.8.1
+        image: prom/prometheus:v2.9.2
         livenessProbe:
           failureThreshold: 3
           httpGet:
