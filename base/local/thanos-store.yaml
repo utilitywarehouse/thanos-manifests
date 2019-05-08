@@ -37,14 +37,14 @@ spec:
     spec:
       containers:
       - name: thanos-store
-        image: quay.io/utilitywarehouse/thanos:time-partioning-2019-05-07-a12b7be
+        image: improbable/thanos:v0.4.0
         args:
         - store
         - --log.level=info
         - --data-dir=/var/thanos/store
         - --objstore.config-file=/etc/thanos/config.yaml
-        - --cluster.disable
-        - --min-time=-47h
+        - --index-cache-size=4GB
+        - --chunk-pool-size=6GB
         ports:
         - name: http
           containerPort: 10902
@@ -76,9 +76,9 @@ spec:
         resources:
           requests:
             cpu: 50m
-            memory: 5Gi
-          limits:
             memory: 6Gi
+          limits:
+            memory: 10Gi
       volumes:
       - name: config-volume
         secret:

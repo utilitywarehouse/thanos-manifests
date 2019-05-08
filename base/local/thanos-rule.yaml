@@ -75,7 +75,6 @@ spec:
         - --eval-interval=30s
         - --alert.query-url=$(THANOS_QUERY_URL)
         - --query.sd-files=/etc/thanos/query-sd.yaml
-        - --cluster.disable
         env:
         - name: ALERTMANAGER_URL
           value: "dns+http://alertmanager.sys-mon"
