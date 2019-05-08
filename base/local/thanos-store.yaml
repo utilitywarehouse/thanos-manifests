@@ -37,14 +37,14 @@ spec:
     spec:
       containers:
       - name: thanos-store
-        image: quay.io/utilitywarehouse/thanos:store-skip-window-2019-03-26-9b94cda
+        image: quay.io/utilitywarehouse/thanos:time-partioning-2019-05-07-a12b7be
         args:
         - store
         - --log.level=info
         - --data-dir=/var/thanos/store
         - --objstore.config-file=/etc/thanos/config.yaml
         - --cluster.disable
-        - --skip-window=47h
+        - --min-time=-47h
         ports:
         - name: http
           containerPort: 10902
