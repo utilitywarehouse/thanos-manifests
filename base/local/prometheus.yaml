@@ -112,7 +112,6 @@ spec:
         - --tsdb.path=/prometheus/data
         - --reloader.rule-dir=/etc/alerts/..data/
         - --objstore.config-file=/etc/thanos/config.yaml
-        - --cluster.disable
         ports:
         - name: http
           containerPort: 10902
