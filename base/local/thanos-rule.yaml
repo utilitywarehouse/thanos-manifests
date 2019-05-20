@@ -79,7 +79,7 @@ spec:
         - name: ALERTMANAGER_URL
           value: "dns+http://alertmanager.sys-mon"
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.sys-mon"
+          value: "https://thanos.dev.uw.systems"
         ports:
         - name: http
           containerPort: 10902
