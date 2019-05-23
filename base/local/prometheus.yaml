@@ -168,10 +168,10 @@ spec:
           timeoutSeconds: 1
         resources:
           requests:
-            cpu: 250m
-            memory: 8Gi
+            cpu: 50m
+            memory: 1500Mi
           limits:
-            memory: 10Gi
+            memory: 4000Mi
         volumeMounts:
         - name: config-volume
           mountPath: /etc/prometheus
