@@ -1,0 +1,126 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    kubernetes.io/ingress.class: traefik-private
+  annotations:
+    external-dns.alpha.kubernetes.io/target: in-k8s.dev.uw.systems
+  name: thanos-query
+  namespace: sys-mon
+spec:
+  rules:
+  - host: thanos.dev.uw.systems
+    http:
+      paths:
+      - backend:
+          serviceName: thanos-query
+          servicePort: 9090
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    kubernetes.io/ingress.class: traefik-private-tls
+  annotations:
+    ingress.kubernetes.io/protocol: h2c
+  name: thanos-query-api
+  namespace: sys-mon
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-query
+  name: thanos-query
+  namespace: sys-mon
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
+spec:
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: http
+    name: http
+  - port: 10901
+    protocol: TCP
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: thanos-query
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-query
+  namespace: sys-mon
+data:
+  store-sd.yaml: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-query
+  namespace: sys-mon
+  labels:
+    app: thanos-query
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: thanos-query
+  template:
+    metadata:
+      labels:
+        app: thanos-query
+    spec:
+      containers:
+      - name: thanos-query
+        image: improbable/thanos:master-2019-03-26-7465db9 
+        args:
+        - query
+        - --log.level=info
+        - --query.replica-label=replica
+        - --store.sd-files=/etc/thanos/store-sd.yaml
+        - --cluster.disable
+        - --query.timeout=5m
+        - --store.response-timeout=15s
+        ports:
+        - name: http
+          containerPort: 10902
+        - name: grpc
+          containerPort: 10901
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /-/healthy
+            port: http
+            scheme: HTTP
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /-/healthy
+            port: http
+            scheme: HTTP
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 50m
+            memory: 500Mi
+          limits:
+            memory: 8000Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/thanos
+      volumes:
+      - name: config
+        configMap:
+          name: thanos-query

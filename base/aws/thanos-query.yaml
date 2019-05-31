@@ -1,0 +1,100 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: private-ingress.k8s.dev.aws.uw.systems
+  name: thanos-query
+spec:
+  rules:
+    - host: thanos-query-api.k8s.dev.aws.uw.systems
+      http:
+        paths:
+          - backend:
+              serviceName: thanos-query
+              servicePort: 10901
+            path: /
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-query
+  namespace: sys-mon
+data:
+  store-sd.yaml: |-
+    - targets:
+      - prometheus-0.thanos-sidecar.sys-mon:10901
+      - prometheus-1.thanos-sidecar.sys-mon:10901
+      - thanos-store.sys-mon:10901
+      - thanos-rule.sys-mon:10901
+      labels:
+        team: infra
+    - targets:
+      - prometheus-0.thanos-sidecar.sys-prom:10901
+      - prometheus-1.thanos-sidecar.sys-prom:10901
+      - thanos-store.sys-prom:10901
+      - thanos-rule.sys-prom:10901
+      labels:
+        team: infra
+    - targets:
+      - prometheus-0.thanos-sidecar.telecom:10901
+      - prometheus-1.thanos-sidecar.telecom:10901
+      - thanos-short-store.telecom:10901
+      - thanos-store.telecom:10901
+      - thanos-rule.telecom:10901
+      labels:
+        team: telco
+    - targets:
+      - prometheus-0.thanos-sidecar.energy:10901
+      - prometheus-1.thanos-sidecar.energy:10901
+      - thanos-store.energy:10901
+      - thanos-rule.energy:10901
+      labels:
+        team: energy
+    - targets:
+      - prometheus-0.thanos-sidecar.customer-platform:10901
+      - prometheus-1.thanos-sidecar.customer-platform:10901
+      - thanos-store.customer-platform:10901
+      - thanos-rule.customer-platform:10901
+      labels:
+        team: customer-platform
+    - targets:
+      - prometheus-0.thanos-sidecar.corp-mon:10901
+      - prometheus-1.thanos-sidecar.corp-mon:10901
+      - thanos-store.corp-mon:10901
+      - thanos-rule.corp-mon:10901
+      labels:
+        team: network
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-query
+  namespace: sys-mon
+  labels:
+    app: thanos-query
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: thanos-query
+  template:
+    metadata:
+      labels:
+        app: thanos-query
+    spec:
+      containers:
+      - name: thanos-query
+        args:
+        - query
+        - --log.level=info
+        - --query.replica-label=replica
+        - --store.sd-files=/etc/thanos/store-sd.yaml
+        - --cluster.disable
+        - --query.timeout=5m
+        - --store.response-timeout=15s
+        resources:
+          requests:
+            cpu: 50m
+            memory: 500Mi
+          limits:
+            memory: 8000Mi

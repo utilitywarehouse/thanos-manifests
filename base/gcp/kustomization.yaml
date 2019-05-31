@@ -7,3 +7,4 @@ patchesStrategicMerge:
 - thanos-compact.yaml
 - thanos-rule.yaml
 - thanos-store.yaml
+- thanos-query.yaml

@@ -6,6 +6,7 @@ resources:
 - thanos-compact.yaml
 - thanos-store.yaml
 - thanos-rule.yaml
+- thanos-query.yaml
 - prometheus.yaml
 - prometheus-configmap.yaml
 - thanos-storage-secret.yaml
