@@ -5,7 +5,7 @@ metadata:
   labels:
     kubernetes.io/ingress.class: traefik-private
   annotations:
-    external-dns.alpha.kubernetes.io/target: private-ingress.environment.domain
+    external-dns.alpha.kubernetes.io/target: example.com
 ---
 apiVersion: apps/v1
 kind: Deployment

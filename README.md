@@ -109,7 +109,7 @@ kind: Ingress
 metadata:
   name: prometheus
   annotations:
-    external-dns.alpha.kubernetes.io/target: private-ingress.environment.domain
+    external-dns.alpha.kubernetes.io/target: example.com
 ```
 
 ### Alerts that run in Thanos rule should live in `alerts` ConfigMap.
