@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: in-k8s.dev.uw.systems
+  name: global-thanos-query
+spec:
+  rules:
+  - host: global-thanos.dev.uw.systems
+    http:
+      paths:
+      - backend:
+          serviceName: global-thanos-query
+          servicePort: 9090
+        path: /
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-thanos-query
+  namespace: sys-mon
+data:
+  store-sd.yaml: |-
+    - targets:
+      - thanos-query-api.dev.gcp.uw.systems:443
+      labels:
+        cluster: gcp
+    - targets:
+      - thanos-query-api.dev.aws.uw.systems:443
+      labels:
+        cluster: aws
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: global-thanos-query
+  namespace: sys-mon
+  labels:
+    app: global-thanos-query
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: global-thanos-query
+  template:
+    metadata:
+      labels:
+        app: global-thanos-query
+    spec:
+      containers:
+      - name: global-thanos-query
+        image: improbable/thanos:master-2019-05-31-a7b47542
+        args:
+        - query
+        - --log.level=info
+        - --query.replica-label=replica
+        - --store.sd-files=/etc/thanos/store-sd.yaml
+        - --grpc-client-tls-secure
+        resources:
+          requests:
+            cpu: 50m
+            memory: 500Mi
+          limits:
+            memory: 5000Mi

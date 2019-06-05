@@ -1,0 +1,92 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: private-ingress.dev.gcp.uw.systems
+  name: thanos-query
+spec:
+  rules:
+  - host: thanos.dev.gcp.uw.systems
+    http:
+      paths:
+      - backend:
+          serviceName: thanos-query
+          servicePort: 9090
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: private-ingress.dev.gcp.uw.systems
+  name: thanos-query-api
+spec:
+  rules:
+    - host: thanos-query-api.dev.gcp.uw.systems
+      http:
+        paths:
+        - backend:
+            serviceName: thanos-query
+            servicePort: 10901
+          path: /
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-query
+data:
+  store-sd.yaml: |-
+    - targets:
+      - prometheus-0.thanos-sidecar.sys-mon:10901
+      - prometheus-1.thanos-sidecar.sys-mon:10901
+      - thanos-store.sys-mon:10901
+      - thanos-rule.sys-mon:10901
+      labels:
+        team: infra
+    - targets:
+      - prometheus-0.thanos-sidecar.sys-prom:10901
+      - prometheus-1.thanos-sidecar.sys-prom:10901
+      - thanos-store.sys-prom:10901
+      - thanos-rule.sys-prom:10901
+      labels:
+        team: infra
+    - targets:
+      - prometheus-0.thanos-sidecar.telecom:10901
+      - prometheus-1.thanos-sidecar.telecom:10901
+      - thanos-store.telecom:10901
+      - thanos-rule.telecom:10901
+      labels:
+        team: telco
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-query
+  namespace: sys-mon
+  labels:
+    app: thanos-query
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: thanos-query
+  template:
+    metadata:
+      labels:
+        app: thanos-query
+    spec:
+      containers:
+      - name: thanos-query
+        image: improbable/thanos:master-2019-05-31-a7b47542
+        args:
+        - query
+        - --log.level=info
+        - --query.replica-label=replica
+        - --store.sd-files=/etc/thanos/store-sd.yaml
+        - --store.response-timeout=30s
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1000Mi
+          limits:
+            memory: 4000Mi
