@@ -53,12 +53,6 @@ spec:
       containers:
       - name: global-thanos-query
         image: improbable/thanos:master-2019-05-31-a7b47542
-        args:
-        - query
-        - --log.level=info
-        - --query.replica-label=replica
-        - --store.sd-files=/etc/thanos/store-sd.yaml
-        - --grpc-client-tls-secure
         ports:
         - name: http
           containerPort: 10902
@@ -82,12 +76,6 @@ spec:
           periodSeconds: 60
           successThreshold: 1
           timeoutSeconds: 1
-        resources:
-          requests:
-            cpu: 50m
-            memory: 500Mi
-          limits:
-            memory: 5000Mi
         volumeMounts:
         - name: config
           mountPath: /etc/thanos

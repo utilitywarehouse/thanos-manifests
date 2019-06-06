@@ -4,7 +4,6 @@ metadata:
   labels:
     kubernetes.io/ingress.class: traefik-private
   name: thanos-query
-  namespace: sys-mon
 spec:
 ---
 apiVersion: extensions/v1beta1
@@ -15,7 +14,6 @@ metadata:
   annotations:
     ingress.kubernetes.io/protocol: h2c
   name: thanos-query-api
-  namespace: sys-mon
 ---
 apiVersion: v1
 kind: Service
@@ -23,36 +21,16 @@ metadata:
   labels:
     app: thanos-query
   name: thanos-query
-  namespace: sys-mon
-  annotations:
-    prometheus.io/path: /metrics
-    prometheus.io/port: "10902"
-    prometheus.io/scrape: "true"
-spec:
-  ports:
-  - port: 9090
-    protocol: TCP
-    targetPort: http
-    name: http
-  - port: 10901
-    protocol: TCP
-    targetPort: grpc
-    name: grpc
-  selector:
-    app: thanos-query
-  sessionAffinity: None
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: thanos-query
-  namespace: sys-mon
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: thanos-query
-  namespace: sys-mon
   labels:
     app: thanos-query
 spec:
