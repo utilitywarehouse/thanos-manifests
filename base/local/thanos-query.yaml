@@ -1,31 +1,51 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  labels:
-    kubernetes.io/ingress.class: traefik-private
   name: thanos-query
 spec:
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  labels:
-    kubernetes.io/ingress.class: traefik-private-tls
-  annotations:
-    ingress.kubernetes.io/protocol: h2c
-  name: thanos-query-api
+  - host: thanos-query.example
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: thanos-query
+          servicePort: 9090
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: thanos-query
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10902"
+    prometheus.io/scrape: "true"
   name: thanos-query
+spec:
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: http
+    name: http
+  - port: 10901
+    protocol: TCP
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: thanos-query
+  sessionAffinity: None
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: thanos-query
+data:
+  store-sd.yaml: |-
+    - targets:
+      - prometheus-0:10901
+      - prometheus-1:10901
+      - thanos-store:10901
+      - thanos-rule:10901
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,7 +101,7 @@ spec:
             cpu: 50m
             memory: 500Mi
           limits:
-            memory: 8000Mi
+            memory: 4000Mi
         volumeMounts:
         - name: config
           mountPath: /etc/thanos
