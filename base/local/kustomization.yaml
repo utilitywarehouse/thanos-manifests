@@ -11,3 +11,4 @@ resources:
 - thanos-storage-secret.yaml
 - alerts.yaml
 - thanos-rule-alerts.yaml
+- thanos-query.yaml
