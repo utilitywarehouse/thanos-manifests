@@ -5,4 +5,3 @@ bases:
 patchesStrategicMerge:
 - prometheus.yaml
 - thanos-rule.yaml
-- thanos-query.yaml
