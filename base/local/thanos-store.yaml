@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: thanos-store
-        image: improbable/thanos:v0.4.0
+        image: improbable/thanos:master-2019-06-28-106c5adb
         args:
         - store
         - --log.level=info
