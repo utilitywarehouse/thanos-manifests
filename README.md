@@ -2,9 +2,10 @@
 
 Kustomize templates for Thanos and Prometheus.
 
-`/base/local` contains team specific Thanos configuration, it provides Thanos Store, Prometheus, Thanos Compact and Thanos Rule services.
+`/base/local` contains basic Thanos configuration, it provides Thanos Store,
+Prometheus, Thanos Compact and Thanos Rule services.
 
-`/base/global` contains global Thanos configuration, it provides Thanos Query, Alertmanager.
+`/base/cloud-provider` contains provider specific patches.
 
 ```
 .
@@ -12,31 +13,37 @@ Kustomize templates for Thanos and Prometheus.
 │   ├── aws
 │   │   ├── kustomization.yaml
 │   │   ├── prometheus.yaml
+│   │   ├── thanos-query.yaml
 │   │   └── thanos-rule.yaml
 │   ├── gcp
 │   │   ├── kustomization.yaml
 │   │   ├── prometheus.yaml
 │   │   ├── thanos-compact.yaml
+│   │   ├── thanos-query.yaml
 │   │   ├── thanos-rule.yaml
 │   │   └── thanos-store.yaml
-│   ├── global
 │   └── local
-│       ├── alerts.yaml
 │       ├── kustomization.yaml
-│       ├── prometheus-alerts.yaml
-│       ├── prometheus-configmap.yaml
 │       ├── prometheus.yaml
 │       ├── thanos-compact.yaml
+│       ├── thanos-query.yaml
 │       ├── thanos-rule.yaml
-│       ├── thanos-storage-secret.yaml
 │       └── thanos-store.yaml
+├── CODEOWNERS
 ├── example
-│   ├── kustomization.yaml
-│   ├── prometheus-alerts.yaml
-│   ├── prometheus.yaml
-│   ├── thanos-compact.yaml
-│   ├── thanos-rule.yaml
-│   └── thanos-storage-secret.yaml
+│   └── aws
+│       ├── kustomization.yaml
+│       ├── prometheus.yaml
+│       ├── resources
+│       │   ├── prometheus-alerts.yaml
+│       │   ├── prometheus.yaml.tmpl
+│       │   ├── query-sd.yaml
+│       │   ├── store-sd.yaml
+│       │   └── thanos-rule-alerts.yaml
+│       ├── secrets
+│       │   └── thanos-storage-secret.yaml
+│       ├── thanos-compact.yaml
+│       └── thanos-rule.yaml
 ├── LICENSE
 └── README.md
 ```
@@ -56,74 +63,21 @@ Also make sure to adjust:
 
 Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
 
-## Conventions
+## Configuration
 
-### Prometheus local alerts live in `thanos-rule-alerts` ConfigMap; key needs to be `thanos-rule.yaml`.
+follow examples in `/example/aws/`
 
-Example:
+You need following 5 configMaps:
 
-```
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: thanos-rule-alert
-data:
-  thanos-rule.yaml: ...
-```
+- prometheus-alerts.yaml
+- prometheus.yaml.tmpl
+- query-sd.yaml
+- store-sd.yaml
+- thanos-rule-alerts.yaml
 
-### S3 storage bucket secret lives in `thanos-storage` secret, key needs to be `config.yaml`:
+And 1 secret:
 
-Example:
-
-```
-apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: thanos-storage
-data:
-  config.yaml: ...
-```
-
-You need to base64 encode the storage config even in GCP case.
-
-Config format can be seen in https://thanos.io/storage.md/#aws-s3-configuration.
-
-### Prod Ingress needs correct DNS annotations
-
-AWS example:
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    external-dns.alpha.kubernetes.io/target: in-k8s.prod.uw.systems
-```
-
-GCP example:
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: prometheus
-  annotations:
-    external-dns.alpha.kubernetes.io/target: example.com
-```
-
-### Alerts that run in Thanos rule should live in `alerts` ConfigMap.
-
-Example:
-
-```
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: alerts
-data:
-  telco-ops.yaml: ...
-```
+- thanos-storage-secret.yaml
 
 **Make sure that alert files end in `.yaml` !!!!**
 
@@ -134,26 +88,6 @@ If you correctly setup Secrets it should just work.
 Consider adding overlay only if you need to set custom resource requirements.
 
 ### Make sure your custom overlays are under `patchesStrategicMerge`
-
-Example:
-
-```
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-- github.com/utilitywarehouse/thanos-manifests/base/aws?ref=v1.1.12
-namespace: telecom
-patchesStrategicMerge:
-- secrets/thanos-storage-secrets.yaml
-- thanos-rule-alerts.yaml
-- prometheus-configmap.yaml
-- alerts.yaml
-- thanos-rule.yaml
-- prometheus.yaml
-resources:
-- 00-namespace.yaml
-- ...
-```
 
 **All other non kustomize resources need to live to be listed in `resources` section, as kube-applier will only apply those**
 
