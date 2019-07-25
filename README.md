@@ -2,51 +2,18 @@
 
 Kustomize templates for Thanos and Prometheus.
 
-`/base/local` contains basic Thanos configuration, it provides Thanos Store,
-Prometheus, Thanos Compact and Thanos Rule services.
+Main components that you get from base are:
 
-`/base/cloud-provider` contains provider specific patches.
+- StatefulSet Prometheus    (replica x2)
+- Deployment Thanos Compact (replica x1)
+- Deployment Thanos Query   (replica x3)
+- Deployment Thanos Rule    (replica x2)
+- StatefulSet Thanos Store  (replica x2)
 
-```
-.
-├── base
-│   ├── aws
-│   │   ├── kustomization.yaml
-│   │   ├── prometheus.yaml
-│   │   ├── thanos-query.yaml
-│   │   └── thanos-rule.yaml
-│   ├── gcp
-│   │   ├── kustomization.yaml
-│   │   ├── prometheus.yaml
-│   │   ├── thanos-compact.yaml
-│   │   ├── thanos-query.yaml
-│   │   ├── thanos-rule.yaml
-│   │   └── thanos-store.yaml
-│   └── local
-│       ├── kustomization.yaml
-│       ├── prometheus.yaml
-│       ├── thanos-compact.yaml
-│       ├── thanos-query.yaml
-│       ├── thanos-rule.yaml
-│       └── thanos-store.yaml
-├── CODEOWNERS
-├── example
-│   └── aws
-│       ├── kustomization.yaml
-│       ├── prometheus.yaml
-│       ├── resources
-│       │   ├── prometheus-alerts.yaml
-│       │   ├── prometheus.yaml.tmpl
-│       │   ├── query-sd.yaml
-│       │   ├── store-sd.yaml
-│       │   └── thanos-rule-alerts.yaml
-│       ├── secrets
-│       │   └── thanos-storage-secret.yaml
-│       ├── thanos-compact.yaml
-│       └── thanos-rule.yaml
-├── LICENSE
-└── README.md
-```
+AWS and GCP overlays provide relvant, provider specific config
+
+You then need to provide config for the base to use, please refer to `/example`
+overlays.
 
 # Migration to v0.4.0 notes
 
@@ -64,20 +31,6 @@ Also make sure to adjust:
 Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
 
 ## Configuration
-
-follow examples in `/example/aws/`
-
-You need following 5 configMaps:
-
-- prometheus-alerts.yaml
-- prometheus.yaml.tmpl
-- query-sd.yaml
-- store-sd.yaml
-- thanos-rule-alerts.yaml
-
-And 1 secret:
-
-- thanos-storage-secret.yaml
 
 **Make sure that alert files end in `.yaml` !!!!**
 
@@ -109,31 +62,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 bases:
 - github.com/utilitywarehouse/thanos-manifests/base/gcp?ref=v1.1.12
-```
-
-### GCP bucket secret must have `config.yaml` and `credentials.json`
-
-Example:
-
-```
-apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: thanos-storage
-data:
-  config.yaml: SECRET
-  credentials.json: GCP_SERVICE_ACCOUNT_BASE64_ENCODED_JSON
-```
-
-`config.yaml` doesn't actually contain any secret.
-
-I generate it using:
-
-```
-echo -n 'type: GCS
-config:
-  bucket: BUCKET_NAME' | base64 -w0 | x
 ```
 
 ## Example
