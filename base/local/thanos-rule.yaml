@@ -36,17 +36,6 @@ spec:
     app: thanos-rule
   sessionAffinity: None
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: thanos
-data:
-  query-sd.yaml: |-
-    - targets:
-      - thanos-query.sys-mon:9090
-      labels:
-        team: infra
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -116,23 +105,6 @@ spec:
             memory: 200Mi
           limits:
             memory: 500Mi
-      - name: config-watch
-        image: alpine
-        resources:
-          requests:
-            cpu: 0m
-            memory: 0Mi
-          limits:
-            memory: 32Mi
-        command:
-          - /bin/sh
-          - -c
-          - |
-            echo '#!/bin/sh
-            if [ "$#" -eq 3 ] && [ "$3" == "..data" ]; then
-                echo "[" $(date -uIseconds) "] config seems to have changed, reloading ..."
-                /usr/bin/wget -q -O- --post-data "" http://localhost:10902/-/reload
-            fi' > /reload && chmod +x /reload && inotifyd /reload /var/thanos/rules:y
         volumeMounts:
         - name: rules
           mountPath: /var/thanos/rules

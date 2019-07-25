@@ -35,18 +35,6 @@ spec:
     app: thanos-query
   sessionAffinity: None
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: thanos-query
-data:
-  store-sd.yaml: |-
-    - targets:
-      - prometheus-0:10901
-      - prometheus-1:10901
-      - thanos-store:10901
-      - thanos-rule:10901
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
