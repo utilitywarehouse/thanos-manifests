@@ -16,17 +16,6 @@ spec:
           servicePort: 10902
         path: /
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: thanos
-data:
-  query-sd.yaml: |-
-    - targets:
-      - thanos-query.namespace:9090
-      labels:
-        team: infra
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -1,0 +1,4 @@
+- targets:
+  - thanos-query.namespace:9090
+  labels:
+    team: infra

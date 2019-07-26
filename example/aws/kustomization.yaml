@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - ../../base/aws
+#  - github.com/utilitywarehouse/thanos-manifests/base/aws
+patchesStrategicMerge:
+  - prometheus.yaml
+  - thanos-compact.yaml
+  - thanos-rule.yaml
+secretGenerator:
+  - name: thanos-storage
+    type: Opaque
+    files:
+      - config.yaml=secrets/thanos-storage-secret.yaml
+configMapGenerator:
+  - name: alerts
+    files:
+      - prometheus-alerts.yaml=resources/prometheus-alerts.yaml
+  - name: prometheus
+    files:
+      - prometheus.yaml.tmpl=resources/prometheus.yaml.tmpl
+  - name: thanos-rule-alerts
+    files:
+      - thanos-rule.yaml=resources/thanos-rule-alerts.yaml
+  - name: thanos
+    files:
+      - query-sd.yaml=resources/query-sd.yaml
+  - name: thanos-query
+    files:
+      - store-sd.yaml=resources/store-sd.yaml

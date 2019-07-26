@@ -1,0 +1,13 @@
+- targets:
+  - prometheus-0.thanos-sidecar:10901
+  - prometheus-1.thanos-sidecar:10901
+  - thanos-store:10901
+  - thanos-rule:10901
+  labels:
+    team: telecom
+- targets:
+  - prometheus-0.thanos-sidecar.sys-prom:10901
+  - prometheus-1.thanos-sidecar.sys-prom:10901
+  - thanos-store.sys-prom:10901
+  labels:
+    team: infra

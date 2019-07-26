@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thanos-compact
+spec:
+  resources:
+    requests:
+      storage: 250Gi
+  storageClassName: ebs-gp2
