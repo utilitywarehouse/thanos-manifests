@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: thanos-store
-        image: improbable/thanos:master-2019-06-28-106c5adb
+        image: thanos
         args:
         - store
         - --log.level=info
@@ -71,7 +71,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/thanos/store
-        - name: config-volume
+        - name: thanos-storage
           mountPath: /etc/thanos
         resources:
           requests:
@@ -80,7 +80,7 @@ spec:
           limits:
             memory: 4000Mi
       volumes:
-      - name: config-volume
+      - name: thanos-storage
         secret:
           secretName: thanos-storage
   volumeClaimTemplates:

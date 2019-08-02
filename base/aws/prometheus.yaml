@@ -1,8 +1,0 @@
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: prometheus
-  labels:
-    kubernetes.io/ingress.class: traefik-private
-  annotations:
-    external-dns.alpha.kubernetes.io/target: example.com

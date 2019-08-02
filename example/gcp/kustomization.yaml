@@ -1,11 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 bases:
-  - ../../base/gcp
-#  - github.com/utilitywarehouse/thanos-manifests/base/gcp
+  - ../../base/
+#  - github.com/utilitywarehouse/thanos-manifests/base/
 patchesStrategicMerge:
+  - gcp-credentials-patch.yaml
   - prometheus.yaml
-  - thanos-compact.yaml
+  - thanos-query.yaml
   - thanos-rule.yaml
 secretGenerator:
   - name: thanos-storage

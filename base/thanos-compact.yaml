@@ -38,7 +38,7 @@ spec:
       terminationGracePeriodSeconds: 1200
       containers:
       - name: thanos-compact
-        image: improbable/thanos:master-2019-06-28-106c5adb
+        image: thanos
         args:
         - compact
         - --log.level=debug
@@ -70,7 +70,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/thanos/compact
-        - name: config-volume
+        - name: thanos-storage
           mountPath: /etc/thanos
         resources:
           requests:
@@ -82,7 +82,7 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: thanos-compact
-      - name: config-volume
+      - name: thanos-storage
         secret:
           secretName: thanos-storage
 ---

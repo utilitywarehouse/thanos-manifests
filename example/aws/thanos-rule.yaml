@@ -5,10 +5,10 @@ metadata:
   labels:
     kubernetes.io/ingress.class: traefik-private
   annotations:
-    external-dns.alpha.kubernetes.io/target: example
+    external-dns.alpha.kubernetes.io/target: load-balancer.overlay.aws.example.com
 spec:
   rules:
-  - host: example-thanos-rule.com
+  - host:  thanos-rule.overlay.aws.example.com
     http:
       paths:
       - backend:
@@ -27,7 +27,6 @@ spec:
       - name: thanos-rule
         env:
         - name: ALERTMANAGER_URL
-          value: "dns+http://alertmanager.namespace"
+          value: "dns+http://alertmanager.overlay-namespace"
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.example"
----
+          value: "https://thanos-query.overlay-namespace"

@@ -10,9 +10,7 @@ Main components that you get from base are:
 - Deployment Thanos Rule    (replica x2)
 - StatefulSet Thanos Store  (replica x2)
 
-AWS and GCP overlays provide relvant, provider specific config
-
-You then need to provide config for the base to use, please refer to `/example`
+You need to provide config for the base to use, please refer to `/example`
 overlays.
 
 # Migration to v0.4.0 notes
@@ -44,34 +42,14 @@ Consider adding overlay only if you need to set custom resource requirements.
 
 **All other non kustomize resources need to live to be listed in `resources` section, as kube-applier will only apply those**
 
-### Import correct base
-
-For AWS please use:
-
-```
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-- github.com/utilitywarehouse/thanos-manifests/base/aws?ref=v1.1.12
-```
-
-For GCP please use:
-
-```
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-- github.com/utilitywarehouse/thanos-manifests/base/gcp?ref=v1.1.12
-```
-
 ## Example
 
-Check out `kustomization.yaml` in `example` directory. 
+Check out `gcp/` and `aws/` overlays in `example` directory. 
 
 You can build example with:
 
 ```
-kustomize build example 
+kustomize build example/aws/
 ```
 
 ## Requires
