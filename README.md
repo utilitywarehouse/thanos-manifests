@@ -1,19 +1,72 @@
-# thanos-manifests
+# Thanos Manifests
 
-Kustomize templates for Thanos and Prometheus.
+This repository provides [Kustomize][1] base to deploy [Prometheus][2] +
+[Thanos][3] and example overlays for general deployment in either AWS or GCP.
 
-Main components that you get from base are:
+Table of Contents
+=================
 
-- StatefulSet Prometheus    (replica x2)
-- Deployment Thanos Compact (replica x1)
-- Deployment Thanos Query   (replica x3)
-- Deployment Thanos Rule    (replica x2)
-- StatefulSet Thanos Store  (replica x2)
+   * [Thanos Manifests](#thanos-manifests)
+   * [Table of Contents](#table-of-contents)
+      * [Usage](#usage)
+         * [GCP configuration](#gcp-configuration)
+      * [Requires](#requires)
+      * [Migration to v0.4.0 notes](#migration-to-v040-notes)
 
-You need to provide config for the base to use, please refer to `/example`
-overlays.
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
-# Migration to v0.4.0 notes
+## Usage
+
+To use the base, reference the remote in you `kustomization.yaml`
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - github.com/utilitywarehouse/thanos-manifests/base?ref=v1.3.1
+```
+
+You then MUST patch the following resources:
+
+- Prometheus Ingress
+- Prometheus Deployment container envvar for external URL
+- Thanos Query Ingress
+- Thanos Rule Ingress
+
+You MUST provide the following ConfigMaps:
+
+- `alerts`
+- `prometheus`
+- `thanos-rule-alerts`
+- `thanos`
+- `thanos-query`
+
+You MUST provide the following Secrets:
+- `thanos-storage`
+
+Alert files MUST have `.yaml` extension.
+
+### GCP configuration
+
+- Secret: `thanos-storage` contains an extra file `credentials.json`
+- Patch Prometheus, Thanos Compact and Thanos Store with a new volumeMount, to
+  provide thanos-storage credentials.json.
+
+For a full example of Kustomize overlay please refer to the provider specific
+example:
+
+- [aws][example/aws/kustomization.yaml]
+- [gcp][example/gcp/kustomization.yaml]
+
+## Requires
+
+- https://github.com/kubernetes-sigs/kustomize
+
+```
+go get -u sigs.k8s.io/kustomize
+```
+
+## Migration to v0.4.0 notes
 
 On migration to v0.4.0 run thanos compact with `--index.generate-missing-cache-file`, it will make your Thanos Store start up blazingly fast.
 
@@ -28,34 +81,6 @@ Also make sure to adjust:
 
 Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
 
-## Configuration
-
-**Make sure that alert files end in `.yaml` !!!!**
-
-### It's safe to assume defaults for Thanos Store and Thanos Compact
-
-If you correctly setup Secrets it should just work. 
-
-Consider adding overlay only if you need to set custom resource requirements.
-
-### Make sure your custom overlays are under `patchesStrategicMerge`
-
-**All other non kustomize resources need to live to be listed in `resources` section, as kube-applier will only apply those**
-
-## Example
-
-Check out `gcp/` and `aws/` overlays in `example` directory. 
-
-You can build example with:
-
-```
-kustomize build example/aws/
-```
-
-## Requires
-
-- https://github.com/kubernetes-sigs/kustomize
-
-```
-go get -u sigs.k8s.io/kustomize
-```
+[1](https://kustomize.io/)
+[2](https://prometheus.io/)
+[3](https://thanos.io/)
