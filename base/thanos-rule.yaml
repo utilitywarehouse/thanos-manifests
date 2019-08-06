@@ -117,4 +117,4 @@ spec:
           name: alerts
       - name: config
         configMap:
-          name: thanos
+          name: thanos-rule

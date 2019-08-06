@@ -38,7 +38,7 @@ You MUST provide the following ConfigMaps:
 - `alerts`
 - `prometheus`
 - `thanos-rule-alerts`
-- `thanos`
+- `thanos-rule`
 - `thanos-query`
 
 You MUST provide the following Secrets:

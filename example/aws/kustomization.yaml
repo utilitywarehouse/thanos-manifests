@@ -32,7 +32,7 @@ configMapGenerator:
       - thanos-rule.yaml=resources/thanos-rule-alerts.yaml
   # description: Discovery config for TQ instances used to evaluate alert rules
   # used-by: Thanos Rule
-  - name: thanos
+  - name: thanos-rule
     files:
       - query-sd.yaml=resources/query-sd.yaml
   # description: Discovery config of Prometheus instances to aggregate query
