@@ -8,23 +8,36 @@ patchesStrategicMerge:
   - thanos-query.yaml
   - thanos-rule.yaml
 secretGenerator:
+  # description: config + credentials for access to object storage
+  # used-by: Prometheus, Thanos Store, Thanos Compact
   - name: thanos-storage
     type: Opaque
     files:
       - config.yaml=secrets/thanos-storage-secret.yaml
 configMapGenerator:
+  # description: application alerts handled by thanos-rule
+  # used-by: Thanos Rule
   - name: alerts
     files:
       - prometheus-alerts.yaml=resources/prometheus-alerts.yaml
+  # description: Prometheus configuration
+  # used-by: Prometheus
   - name: prometheus
     files:
       - prometheus.yaml.tmpl=resources/prometheus.yaml.tmpl
+  # description: Alerts to monitor Thanos infrastructure
+  # used-by: Prometheus
   - name: thanos-rule-alerts
     files:
       - thanos-rule.yaml=resources/thanos-rule-alerts.yaml
+  # description: Discovery config for TQ instances used to evaluate alert rules
+  # used-by: Thanos Rule
   - name: thanos
     files:
       - query-sd.yaml=resources/query-sd.yaml
+  # description: Discovery config of Prometheus instances to aggregate query
+  #   results
+  # used-by: Thanos Query
   - name: thanos-query
     files:
       - store-sd.yaml=resources/store-sd.yaml
