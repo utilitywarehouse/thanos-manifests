@@ -29,9 +29,11 @@ bases:
 You then MUST patch the following resources:
 
 - Prometheus Ingress
-- Prometheus Deployment container envvar for external URL
+- Prometheus `PROMETHEUS_URL` envvar
 - Thanos Query Ingress
 - Thanos Rule Ingress
+- Thanos Rule `ALERTMANAGER_URL` envvar
+- Thanos Rule `THANOS_QUERY_URL` envvar
 
 You MUST provide the following ConfigMaps:
 
@@ -55,8 +57,8 @@ Alert files MUST have `.yaml` extension.
 For a full example of Kustomize overlay please refer to the provider specific
 example:
 
-- [aws][example/aws/kustomization.yaml]
-- [gcp][example/gcp/kustomization.yaml]
+- [aws](example/aws/kustomization.yaml)
+- [gcp](example/gcp/kustomization.yaml)
 
 ## Requires
 
@@ -81,6 +83,6 @@ Also make sure to adjust:
 
 Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
 
-[1](https://kustomize.io/)
-[2](https://prometheus.io/)
-[3](https://thanos.io/)
+[1]: https://kustomize.io/
+[2]: https://prometheus.io/
+[3]: https://thanos.io/
