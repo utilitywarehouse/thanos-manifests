@@ -67,8 +67,9 @@ spec:
         env:
         - name: ALERTMANAGER_URL
           value: "dns+http://alertmanager.base-namespace"
+        # external URL for rendering inside alerts
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.base-namespace"
+          value: "https://thanos-query.base.example.com"
         ports:
         - name: http
           containerPort: 10902

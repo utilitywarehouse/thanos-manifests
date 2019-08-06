@@ -29,4 +29,4 @@ spec:
         - name: ALERTMANAGER_URL
           value: "dns+http://alertmanager.overlay-namespace"
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.overlay-namespace"
+          value: "https://thanos-query.overlay.example.com"
