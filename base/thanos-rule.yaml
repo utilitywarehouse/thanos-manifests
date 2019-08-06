@@ -4,7 +4,7 @@ metadata:
   name: thanos-rule
 spec:
   rules:
-  - host: thanos-rule.example
+  - host: thanos-rule.base.example.com
     http:
       paths:
       - backend:
@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
       - name: thanos-rule
-        image: improbable/thanos:master-2019-06-28-106c5adb
+        image: thanos
         args:
         - rule
         - --log.level=info
@@ -66,9 +66,9 @@ spec:
         - --query.sd-files=/etc/thanos/query-sd.yaml
         env:
         - name: ALERTMANAGER_URL
-          value: "dns+http://alertmanager.sys-mon"
+          value: "dns+http://alertmanager.base-namespace"
         - name: THANOS_QUERY_URL
-          value: "https://thanos-query.sys-mon"
+          value: "https://thanos-query.base-namespace"
         ports:
         - name: http
           containerPort: 10902
@@ -117,4 +117,4 @@ spec:
           name: alerts
       - name: config
         configMap:
-          name: thanos
+          name: thanos-rule

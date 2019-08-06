@@ -4,7 +4,7 @@ metadata:
   name: prometheus
 spec:
   rules:
-  - host: prometheus.example
+  - host: prometheus.base.example.com
     http:
       paths:
       - path: /
@@ -102,7 +102,7 @@ spec:
             weight: 100
       containers:
       - name: thanos-sidecar
-        image: improbable/thanos:master-2019-06-28-106c5adb
+        image: thanos
         args:
         - sidecar
         - --log.level=info
@@ -126,7 +126,7 @@ spec:
           mountPath: /etc/prometheus
         - name: alerts-volume
           mountPath: /etc/alerts
-        - name: thanos-config-volume
+        - name: thanos-storage
           mountPath: /etc/thanos
       - name: prometheus
         args:
@@ -142,8 +142,8 @@ spec:
         - --web.console.templates=/usr/share/prometheus/consoles
         env:
         - name: PROMETHEUS_URL
-          value: "https://prometheus.fake"
-        image: prom/prometheus:v2.10.0
+          value: "https://prometheus.base.example.com"
+        image: prometheus
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -196,7 +196,7 @@ spec:
           name: thanos-rule-alerts
       - name: config-shared
         emptyDir: {}
-      - name: thanos-config-volume
+      - name: thanos-storage
         secret:
           secretName: thanos-storage
   updateStrategy:

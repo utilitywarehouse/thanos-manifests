@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-query
+  labels:
+    kubernetes.io/ingress.class: traefik-private
+  annotations:
+    external-dns.alpha.kubernetes.io/target: load-balancer.overlay.gcp.example.com
+spec:
+  rules:
+  - host: thanos-query.overlay.gcp.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: thanos-query
+          servicePort: 9090
