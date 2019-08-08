@@ -1,13 +1,20 @@
+# Store targets for thanos-query to use for searching
 - targets:
+  # Prometheus sidecars for the short term metrics
   - prometheus-0.thanos-sidecar:10901
   - prometheus-1.thanos-sidecar:10901
+  # Store gateway for long term metrics
   - thanos-store:10901
+  # Thanos ruler exposes synthetic time series of the form
+  # ```
+  # ALERTS{alertname="<alert name>", alertstate="pending|firing", <additional # alert labels>}
+  # ```
+  # The sample value is set to 1 as long as the alert is in the indicated
+  # active (pending or firing) state, and the series is marked stale when this is
+  # no longer the case.
   - thanos-rule:10901
-  labels:
-    team: telecom
+# Another instance of Prometheus/Thanos to be included in the queries
 - targets:
-  - prometheus-0.thanos-sidecar.sys-prom:10901
-  - prometheus-1.thanos-sidecar.sys-prom:10901
-  - thanos-store.sys-prom:10901
-  labels:
-    team: infra
+  - prometheus-0.thanos-sidecar.example-namespace:10901
+  - prometheus-1.thanos-sidecar.example-namespace:10901
+  - thanos-store.example-namespace:10901
