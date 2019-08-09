@@ -106,9 +106,6 @@ spec:
             memory: 200Mi
           limits:
             memory: 500Mi
-        volumeMounts:
-        - name: rules
-          mountPath: /var/thanos/rules
       volumes:
       - name: data
         emptyDir: {}
