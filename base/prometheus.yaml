@@ -110,7 +110,6 @@ spec:
         - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
         - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
         - --tsdb.path=/prometheus/data
-        - --reloader.rule-dir=/etc/alerts/..data/
         - --objstore.config-file=/etc/thanos/config.yaml
         ports:
         - name: http
