@@ -10,8 +10,8 @@ resources:
   - thanos-store.yaml
 images:
   - name: thanos
-    newName: improbable/thanos
-    newTag: master-2019-06-28-106c5adb
+    newName: quay.io/thanos/thanos
+    newTag: v0.7.0-rc.0
   - name: prometheus
     newName: prom/prometheus
-    newTag: v2.10.0
+    newTag: v2.12.0
