@@ -52,7 +52,7 @@ spec:
           containerPort: 10901
         livenessProbe:
           httpGet:
-            path: /metrics
+            path: /-/healthy
             port: http
             scheme: HTTP
           periodSeconds: 20
@@ -61,7 +61,7 @@ spec:
           timeoutSeconds: 10
         readinessProbe:
           httpGet:
-            path: /metrics
+            path: /-/ready
             port: http
             scheme: HTTP
           periodSeconds: 20

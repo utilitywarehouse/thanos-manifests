@@ -78,7 +78,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /-/healthy
+            path: /-/ready
             port: http
             scheme: HTTP
           periodSeconds: 60
