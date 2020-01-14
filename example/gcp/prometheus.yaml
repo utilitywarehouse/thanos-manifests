@@ -1,21 +1,3 @@
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: prometheus
-  labels:
-    kubernetes.io/ingress.class: traefik-private
-  annotations:
-    external-dns.alpha.kubernetes.io/target: load-balancer.overlay.gcp.example.com
-spec:
-  rules:
-  - host: prometheus.overlay.gcp.example.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: prometheus
-          servicePort: 9090
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

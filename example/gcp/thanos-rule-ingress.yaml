@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-rule
+spec:
+  rules:
+    - host: thanos-rule.base.example.com
+      http:
+        paths:
+          - backend:
+              serviceName: thanos-rule
+              servicePort: 10902
+            path: /
