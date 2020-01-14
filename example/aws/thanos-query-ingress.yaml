@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-query
+spec:
+  - host: thanos-query.example.com
+    http:
+      paths:
+        - path: /
+          backend:
+            serviceName: thanos-query
+            servicePort: 9090
