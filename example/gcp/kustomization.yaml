@@ -3,10 +3,13 @@ kind: Kustomization
 bases:
   - ../../base/
 #  - github.com/utilitywarehouse/thanos-manifests/base
+resources:
+  - prometheus-ingress.yaml
+  - thanos-query-ingress.yaml
+  - thanos-rule-ingress.yaml
 patchesStrategicMerge:
   - gcp-credentials-patch.yaml
   - prometheus.yaml
-  - thanos-query.yaml
   - thanos-rule.yaml
 secretGenerator:
   # description: config + credentials for access to object storage
