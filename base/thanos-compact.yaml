@@ -18,6 +18,11 @@ spec:
     app: thanos-compact
   sessionAffinity: None
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: thanos-compact
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,6 +41,7 @@ spec:
       name: thanos-compact
     spec:
       terminationGracePeriodSeconds: 1200
+      serviceAccountName: thanos-compact
       containers:
       - name: thanos-compact
         image: thanos

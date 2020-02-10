@@ -17,6 +17,11 @@ spec:
     app: thanos-store
   sessionAffinity: None
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: thanos-store
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -35,6 +40,7 @@ spec:
       labels:
         app: thanos-store
     spec:
+      serviceAccountName: thanos-store
       containers:
       - name: thanos-store
         image: thanos
