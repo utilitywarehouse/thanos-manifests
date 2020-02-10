@@ -28,10 +28,7 @@ bases:
 
 You then MUST patch the following resources:
 
-- Prometheus Ingress
 - Prometheus `PROMETHEUS_URL` envvar
-- Thanos Query Ingress
-- Thanos Rule Ingress
 - Thanos Rule `ALERTMANAGER_URL` envvar
 - Thanos Rule `THANOS_QUERY_URL` envvar
 
