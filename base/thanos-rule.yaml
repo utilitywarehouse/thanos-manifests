@@ -22,6 +22,11 @@ spec:
     app: thanos-rule
   sessionAffinity: None
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: thanos-rule
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,6 +43,7 @@ spec:
       labels:
         app: thanos-rule
     spec:
+      serviceAccountName: thanos-rule
       containers:
       - name: thanos-rule
         image: thanos
