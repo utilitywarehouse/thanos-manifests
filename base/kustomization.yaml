@@ -4,6 +4,7 @@ commonLabels:
   service: monitoring
 resources:
   - prometheus.yaml
+  - prometheus-cadvisor.yaml
   - thanos-compact.yaml
   - thanos-query.yaml
   - thanos-rule.yaml
