@@ -67,9 +67,14 @@ go get -u sigs.k8s.io/kustomize
 
 ## Migration to v0.4.0 notes
 
-On migration to v0.4.0 run thanos compact with `--index.generate-missing-cache-file`, it will make your Thanos Store start up blazingly fast.
+On migration to v0.4.0 run thanos compact with
+`--index.generate-missing-cache-file`, it will make your Thanos Store start up
+blazingly fast.
 
-> New Compactor flag: --index.generate-missing-cache-file was added to allow quicker addition of index cache files. If enabled it precomputes missing files on compactor startup. Note that it will take time and it's only one-off step per bucket.<Paste>
+> New Compactor flag: --index.generate-missing-cache-file was added to allow
+quicker addition of index cache files. If enabled it precomputes missing files
+on compactor startup. Note that it will take time and it's only one-off step
+per bucket.
 
 Also make sure to adjust:
 
@@ -78,7 +83,8 @@ Also make sure to adjust:
 --chunk-pool-size
 ```
 
-Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
+Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and
+by default limits to 250MB.
 
 [1]: https://kustomize.io/
 [2]: https://prometheus.io/
