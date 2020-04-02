@@ -45,6 +45,22 @@ You MUST provide the following Secrets:
 
 Alert files MUST have `.yaml` extension.
 
+### Additional Prometheus
+
+If you require an additional set of a `prometheus`, `thanos-storage` and
+`thanos-compact` stack (to use with a separate configuration), you can reference
+the more specific base:
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-prometheus?ref=v1.3.1
+```
+
+Note that you must still follow the configuration instructions in the previous
+section, ignoring any parts for `thanos-rule` and `thanos-query`.
+
 ### GCP configuration
 
 - Secret: `thanos-storage` contains an extra file `credentials.json`
