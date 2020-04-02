@@ -45,6 +45,22 @@ You MUST provide the following Secrets:
 
 Alert files MUST have `.yaml` extension.
 
+### Additional Prometheus
+
+If you require an additional set of a `prometheus`, `thanos-storage` and
+`thanos-compact` stack (to use with a separate configuration), you can reference
+the more specific base:
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-prometheus?ref=v1.3.1
+```
+
+Note that you must still follow the configuration instructions in the previous
+section, ignoring any parts for `thanos-rule` and `thanos-query`.
+
 ### GCP configuration
 
 - Secret: `thanos-storage` contains an extra file `credentials.json`
@@ -67,9 +83,14 @@ go get -u sigs.k8s.io/kustomize
 
 ## Migration to v0.4.0 notes
 
-On migration to v0.4.0 run thanos compact with `--index.generate-missing-cache-file`, it will make your Thanos Store start up blazingly fast.
+On migration to v0.4.0 run thanos compact with
+`--index.generate-missing-cache-file`, it will make your Thanos Store start up
+blazingly fast.
 
-> New Compactor flag: --index.generate-missing-cache-file was added to allow quicker addition of index cache files. If enabled it precomputes missing files on compactor startup. Note that it will take time and it's only one-off step per bucket.<Paste>
+> New Compactor flag: --index.generate-missing-cache-file was added to allow
+quicker addition of index cache files. If enabled it precomputes missing files
+on compactor startup. Note that it will take time and it's only one-off step
+per bucket.
 
 Also make sure to adjust:
 
@@ -78,7 +99,8 @@ Also make sure to adjust:
 --chunk-pool-size
 ```
 
-Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and by default limits to 250MB.
+Previously Cache limiting wasn't working properly and in v0.4.0 it's fixed and
+by default limits to 250MB.
 
 [1]: https://kustomize.io/
 [2]: https://prometheus.io/
