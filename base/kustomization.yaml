@@ -11,3 +11,5 @@ images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.11.0
+configurations:
+- thanos-prometheus/kustomizeconfig/ingressroute.yaml

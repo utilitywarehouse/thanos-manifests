@@ -1,0 +1,7 @@
+nameReference:
+- kind: Service
+  version: v1
+  fieldSpecs:
+  - path: spec/routes/services/name
+    version: v1alpha1
+    kind: IngressRoute

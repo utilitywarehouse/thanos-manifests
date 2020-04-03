@@ -13,3 +13,5 @@ images:
   - name: prometheus
     newName: prom/prometheus
     newTag: v2.17.1
+configurations:
+- kustomizeconfig/ingressroute.yaml
