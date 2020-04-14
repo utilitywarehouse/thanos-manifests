@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  service: monitoring
+resources:
+  - prometheus.yaml
+images:
+  - name: prometheus
+    newName: prom/prometheus
+    newTag: v2.17.1
+  - name: thanos
+    newName: quay.io/thanos/thanos
+    newTag: v0.11.0

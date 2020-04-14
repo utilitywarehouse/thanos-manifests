@@ -3,13 +3,8 @@ kind: Kustomization
 commonLabels:
   service: monitoring
 resources:
-  - prometheus.yaml
-  - thanos-compact.yaml
-  - thanos-store.yaml
+  - thanos-rule.yaml
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.11.0
-  - name: prometheus
-    newName: prom/prometheus
-    newTag: v2.17.1
