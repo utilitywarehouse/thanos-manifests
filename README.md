@@ -45,21 +45,27 @@ You MUST provide the following Secrets:
 
 Alert files MUST have `.yaml` extension.
 
-### Additional Prometheus
+### Additional Components
 
-If you require an additional set of a `prometheus`, `thanos-storage` and
-`thanos-compact` stack (to use with a separate configuration), you can reference
-the more specific base:
+You will find that the base actually pulls each individual component as a sub-
+base. The reason for this is so that we can add additional components without
+having to deploy the entire stack.
+
+The prime example of this is adding an extra set of a `prometheus`,
+`thanos-storage` and `thanos-compact` stack which can be used with a separate
+configuration. You can reference the more specific bases:
 
 ```
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 bases:
-  - github.com/utilitywarehouse/thanos-manifests/base/thanos-prometheus?ref=v1.3.1
+  - github.com/utilitywarehouse/thanos-manifests/base/prometheus?ref=v1.3.1
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=v1.3.1
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-compact?ref=v1.3.1
 ```
 
-Note that you must still follow the configuration instructions in the previous
-section, ignoring any parts for `thanos-rule` and `thanos-query`.
+Note that in this case you must still follow the configuration instructions in
+the previous section, ignoring any parts for `thanos-rule` and `thanos-query`.
 
 ### GCP configuration
 
