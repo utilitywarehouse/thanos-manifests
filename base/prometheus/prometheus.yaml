@@ -168,7 +168,6 @@ spec:
           mountPath: /prometheus
       securityContext:
         runAsUser: 0
-      serviceAccount: prometheus
       serviceAccountName: prometheus
       volumes:
       - name: config-volume
