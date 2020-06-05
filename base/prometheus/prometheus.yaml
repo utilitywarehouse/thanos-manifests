@@ -118,7 +118,7 @@ spec:
         - --log.level=info
         - --config.file=/etc/prometheus-shared/prometheus.yaml
         - --storage.tsdb.path=/prometheus/data
-        - --storage.tsdb.retention=2d
+        - --storage.tsdb.retention=$(PROMETHEUS_DB_RETENTION)
         - --storage.tsdb.min-block-duration=2h
         - --storage.tsdb.max-block-duration=2h
         - --web.external-url=$(PROMETHEUS_URL)
@@ -128,6 +128,8 @@ spec:
         env:
         - name: PROMETHEUS_URL
           value: "https://prometheus.base.example.com"
+        - name: PROMETHEUS_DB_RETENTION
+          value: "2d"
         image: prometheus
         livenessProbe:
           failureThreshold: 3
