@@ -52,16 +52,16 @@ spec:
         - --log.level=info
         - --data-dir=/var/thanos/data/
         - --rule-file=/var/thanos/rules/*.yaml
-        - --alertmanagers.url=$(ALERTMANAGER_URL)
+          #        - --alertmanagers.url=$(ALERTMANAGER_URL)
         - --eval-interval=30s
         - --alert.query-url=$(THANOS_QUERY_URL)
         - --query.sd-files=/etc/thanos/query-sd.yaml
         env:
-        - name: ALERTMANAGER_URL
-          value: "dns+http://alertmanager.base-namespace"
-        # external URL for rendering inside alerts
-        - name: THANOS_QUERY_URL
-          value: "https://thanos-query.base.example.com"
+          #        - name: ALERTMANAGER_URL
+          #          value: "dns+http://alertmanager.base-namespace"
+          #        # external URL for rendering inside alerts
+          #        - name: THANOS_QUERY_URL
+          #          value: "https://thanos-query.base.example.com"
         ports:
         - name: http
           containerPort: 10902
