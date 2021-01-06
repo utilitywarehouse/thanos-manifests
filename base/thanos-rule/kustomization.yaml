@@ -7,4 +7,4 @@ resources:
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.14.0
+    newTag: v0.17.2
