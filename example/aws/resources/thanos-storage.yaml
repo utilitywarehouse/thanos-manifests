@@ -1,6 +1,6 @@
 type: S3
 config:
   bucket: "bucket-name"
-  endpoint: "s3.eu-west-5.amazonaws.com"
+  endpoint: "s3.eu-west-1.amazonaws.com"
   sse_config:
     type: SSE-S3
