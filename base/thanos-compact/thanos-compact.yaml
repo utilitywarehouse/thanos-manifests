@@ -89,8 +89,8 @@ spec:
         persistentVolumeClaim:
           claimName: thanos-compact
       - name: thanos-storage
-        secret:
-          secretName: thanos-storage
+        configMap:
+          name: thanos-storage
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

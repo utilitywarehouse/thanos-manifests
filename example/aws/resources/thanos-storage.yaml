@@ -2,7 +2,5 @@ type: S3
 config:
   bucket: "bucket-name"
   endpoint: "s3.eu-west-5.amazonaws.com"
-  access_key: "AKIAIOSFODNN7EXAMPLE"
-  secret_key: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   sse_config:
     type: SSE-S3

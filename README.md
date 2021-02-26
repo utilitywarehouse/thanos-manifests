@@ -9,6 +9,8 @@ Table of Contents
    * [Thanos Manifests](#thanos-manifests)
    * [Table of Contents](#table-of-contents)
       * [Usage](#usage)
+         * [Additional Components](#additional-components)
+         * [AWS configuration](#aws-configuration)
          * [GCP configuration](#gcp-configuration)
       * [Requires](#requires)
       * [Migration to v0.4.0 notes](#migration-to-v040-notes)
@@ -38,12 +40,13 @@ You MUST provide the following ConfigMaps:
 - `prometheus`
 - `thanos-rule-alerts`
 - `thanos-rule`
+- `thanos-storage`
 - `thanos-query`
 
-You MUST provide the following Secrets:
-- `thanos-storage`
-
 Alert files MUST have `.yaml` extension.
+
+Refer to [AWS Configuration](#aws-configuration) and
+[GCP Configuration](#gcp-configuration) for provider specific requirements.
 
 ### Additional Components
 
@@ -67,17 +70,26 @@ bases:
 Note that in this case you must still follow the configuration instructions in
 the previous section, ignoring any parts for `thanos-rule` and `thanos-query`.
 
+### AWS configuration
+
+Patch the following to provide AWS credentials via Vault as outlined in [this
+documentation](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault-aws.md):
+
+- Prometheus `ServiceAccount` and `StatefulSet`
+- Thanos Compact `ServiceAccount` and `Deployment`
+- Thanos Store `ServiceAccount` and `StatefulSet`
+
+For a full example of a Kustomize overlay please refer to the
+[example](example/aws/kustomization.yaml).
+
 ### GCP configuration
 
-- Secret: `thanos-storage` contains an extra file `credentials.json`
-- Patch Prometheus, Thanos Compact and Thanos Store with a new volumeMount, to
-  provide thanos-storage credentials.json.
+- A secret `thanos-storage` containing `credentials.json`
+- Patch Prometheus, Thanos Compact and Thanos Store with a volume and volumeMount, to
+  provide `credentials.json` from the `thanos-storage` secret.
 
-For a full example of Kustomize overlay please refer to the provider specific
-example:
-
-- [aws](example/aws/kustomization.yaml)
-- [gcp](example/gcp/kustomization.yaml)
+For a full example of a Kustomize overlay please refer to the
+[example](example/gcp/kustomization.yaml).
 
 ## Requires
 
