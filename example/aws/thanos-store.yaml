@@ -1,22 +1,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: prometheus
+  name: thanos-store
   annotations:
     vault.uw.systems/aws-role: "arn:aws:iam::000000000000:role/example-role"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: prometheus
+  name: thanos-store
 spec:
   template:
     metadata:
       annotations:
         injector.tumblr.com/request: vault-sidecar-aws
-    spec:
-      containers:
-        - name: prometheus
-          env:
-            - name: PROMETHEUS_URL
-              value: "https://prometheus.overlay.aws.example.com"

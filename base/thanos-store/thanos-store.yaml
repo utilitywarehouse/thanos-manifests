@@ -10,9 +10,9 @@ metadata:
   name: thanos-store
 spec:
   ports:
-  - port: 10901
-    protocol: TCP
-    targetPort: grpc
+    - port: 10901
+      protocol: TCP
+      targetPort: grpc
   selector:
     app: thanos-store
   sessionAffinity: None
@@ -42,53 +42,53 @@ spec:
     spec:
       serviceAccountName: thanos-store
       containers:
-      - name: thanos-store
-        image: thanos
-        args:
-        - store
-        - --log.level=info
-        - --data-dir=/var/thanos/store
-        - --objstore.config-file=/etc/thanos/config.yaml
-        - --index-cache-size=4GB
-        - --chunk-pool-size=6GB
-        ports:
-        - name: http
-          containerPort: 10902
-        - name: grpc
-          containerPort: 10901
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: http
-            scheme: HTTP
-          periodSeconds: 20
-          successThreshold: 1
-          failureThreshold: 25
-          timeoutSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: http
-            scheme: HTTP
-          periodSeconds: 20
-          successThreshold: 1
-          timeoutSeconds: 10
-          failureThreshold: 25
-        volumeMounts:
-        - name: data
-          mountPath: /var/thanos/store
-        - name: thanos-storage
-          mountPath: /etc/thanos
-        resources:
-          requests:
-            cpu: 0m
-            memory: 500Mi
-          limits:
-            memory: 4000Mi
+        - name: thanos-store
+          image: thanos
+          args:
+            - store
+            - --log.level=info
+            - --data-dir=/var/thanos/store
+            - --objstore.config-file=/etc/thanos/config.yaml
+            - --index-cache-size=4GB
+            - --chunk-pool-size=6GB
+          ports:
+            - name: http
+              containerPort: 10902
+            - name: grpc
+              containerPort: 10901
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 25
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 10
+            failureThreshold: 25
+          volumeMounts:
+            - name: data
+              mountPath: /var/thanos/store
+            - name: thanos-storage
+              mountPath: /etc/thanos
+          resources:
+            requests:
+              cpu: 0m
+              memory: 500Mi
+            limits:
+              memory: 4000Mi
       volumes:
-      - name: thanos-storage
-        secret:
-          secretName: thanos-storage
+        - name: thanos-storage
+          configMap:
+            name: thanos-storage
   volumeClaimTemplates:
     - metadata:
         name: data
