@@ -52,6 +52,9 @@ spec:
         - --wait
         - --consistency-delay=30m
         - --objstore.config-file=/etc/thanos/config.yaml
+        - --retention.resolution-raw=1y
+        - --retention.resolution-5m=1y
+        - --retention.resolution-1h=1y
         ports:
         - name: http
           containerPort: 10902
