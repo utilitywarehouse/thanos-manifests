@@ -33,15 +33,18 @@ metadata:
   name: thanos-query
   labels:
     app: thanos-query
+    app.kubernetes.io/name: thanos-query
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: thanos-query
+      app.kubernetes.io/name: thanos-query
   template:
     metadata:
       labels:
         app: thanos-query
+        app.kubernetes.io/name: thanos-query
     spec:
       serviceAccountName: thanos-query
       containers:

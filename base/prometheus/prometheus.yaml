@@ -57,6 +57,7 @@ metadata:
   name: prometheus
   labels:
     app: prometheus
+    app.kubernetes.io/name: prometheus
     role: prometheus
 spec:
   podManagementPolicy: Parallel
@@ -64,12 +65,14 @@ spec:
   selector:
     matchLabels:
       app: prometheus
+      app.kubernetes.io/name: prometheus
       role: prometheus
   serviceName: prometheus
   template:
     metadata:
       labels:
         app: prometheus
+        app.kubernetes.io/name: prometheus
         role: prometheus
       name: prometheus
     spec:
@@ -102,6 +105,12 @@ spec:
               containerPort: 10902
             - name: grpc
               containerPort: 10901
+          resources:
+            requests:
+              cpu: 0m
+              memory: 32Mi
+            limits:
+              memory: 256Mi
           volumeMounts:
             - name: prometheus
               mountPath: /prometheus
