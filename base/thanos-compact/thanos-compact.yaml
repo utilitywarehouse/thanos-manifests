@@ -34,10 +34,12 @@ spec:
   selector:
     matchLabels:
       app: thanos-compact
+      app.kubernetes.io/name: thanos-compact
   template:
     metadata:
       labels:
         app: thanos-compact
+        app.kubernetes.io/name: thanos-compact
       name: thanos-compact
     spec:
       terminationGracePeriodSeconds: 1200
@@ -105,4 +107,3 @@ spec:
   resources:
     requests:
       storage: 100Gi
----

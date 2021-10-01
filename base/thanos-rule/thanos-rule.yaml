@@ -33,15 +33,18 @@ metadata:
   name: thanos-rule
   labels:
     app: thanos-rule
+    app.kubernetes.io/name: thanos-rule
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: thanos-rule
+      app.kubernetes.io/name: thanos-rule
   template:
     metadata:
       labels:
         app: thanos-rule
+        app.kubernetes.io/name: thanos-rule
     spec:
       serviceAccountName: thanos-rule
       containers:
