@@ -10,4 +10,4 @@ images:
     newTag: v2.30.3
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.23.1
+    newTag: v0.24.0-rc.2
