@@ -49,11 +49,9 @@ spec:
           image: thanos
           args:
             - store
-            - --log.level=info
+            - --log.level=warn
             - --data-dir=/var/thanos/store
             - --objstore.config-file=/etc/thanos/config.yaml
-            - --index-cache-size=4GB
-            - --chunk-pool-size=6GB
           ports:
             - name: http
               containerPort: 10902

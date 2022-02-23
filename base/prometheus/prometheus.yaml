@@ -94,7 +94,7 @@ spec:
           image: thanos
           args:
             - sidecar
-            - --log.level=info
+            - --log.level=warn
             - --prometheus.url=http://127.0.0.1:9090
             - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
             - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
@@ -124,7 +124,7 @@ spec:
               mountPath: /etc/thanos
         - name: prometheus
           args:
-            - --log.level=info
+            - --log.level=warn
             - --config.file=/etc/prometheus-shared/prometheus.yaml
             - --storage.tsdb.path=/prometheus/data
             - --storage.tsdb.retention=$(PROMETHEUS_DB_RETENTION)

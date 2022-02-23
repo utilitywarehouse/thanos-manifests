@@ -3,20 +3,6 @@
 This repository provides [Kustomize][1] base to deploy [Prometheus][2] +
 [Thanos][3] and example overlays for general deployment in either AWS or GCP.
 
-Table of Contents
-=================
-
-   * [Thanos Manifests](#thanos-manifests)
-   * [Table of Contents](#table-of-contents)
-      * [Usage](#usage)
-         * [Additional Components](#additional-components)
-         * [AWS configuration](#aws-configuration)
-         * [GCP configuration](#gcp-configuration)
-      * [Requires](#requires)
-      * [Migration to v0.4.0 notes](#migration-to-v040-notes)
-
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
-
 ## Usage
 
 To use the base, reference the remote in you `kustomization.yaml`
@@ -24,8 +10,8 @@ To use the base, reference the remote in you `kustomization.yaml`
 ```
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
-  - github.com/utilitywarehouse/thanos-manifests/base?ref=v1.3.1
+resources:
+  - github.com/utilitywarehouse/thanos-manifests/base?ref=master
 ```
 
 You then MUST patch the following resources:
@@ -61,10 +47,10 @@ configuration. You can reference the more specific bases:
 ```
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
-  - github.com/utilitywarehouse/thanos-manifests/base/prometheus?ref=v1.3.1
-  - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=v1.3.1
-  - github.com/utilitywarehouse/thanos-manifests/base/thanos-compact?ref=v1.3.1
+resources:
+  - github.com/utilitywarehouse/thanos-manifests/base/prometheus?ref=master
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=master
+  - github.com/utilitywarehouse/thanos-manifests/base/thanos-compact?ref=master
 ```
 
 Note that in this case you must still follow the configuration instructions in

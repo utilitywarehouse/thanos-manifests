@@ -10,10 +10,10 @@ metadata:
     prometheus.io/scrape: "true"
 spec:
   ports:
-  - port: 10902
-    protocol: TCP
-    targetPort: http
-    name: http-query
+    - port: 10902
+      protocol: TCP
+      targetPort: http
+      name: http-query
   selector:
     app: thanos-compact
   sessionAffinity: None
@@ -45,57 +45,56 @@ spec:
       terminationGracePeriodSeconds: 1200
       serviceAccountName: thanos-compact
       containers:
-      - name: thanos-compact
-        image: thanos
-        args:
-        - compact
-        - --log.level=info
-        - --data-dir=/var/thanos/compact
-        - --wait
-        - --consistency-delay=30m
-        - --objstore.config-file=/etc/thanos/config.yaml
-        - --retention.resolution-raw=1y
-        - --retention.resolution-5m=1y
-        - --retention.resolution-1h=1y
-        ports:
-        - name: http
-          containerPort: 10902
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: http
-            scheme: HTTP
-          periodSeconds: 90
-          successThreshold: 1
-          failureThreshold: 5
-          timeoutSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: http
-            scheme: HTTP
-          periodSeconds: 90
-          successThreshold: 1
-          failureThreshold: 5
-          timeoutSeconds: 10
-        volumeMounts:
-        - name: data
-          mountPath: /var/thanos/compact
-        - name: thanos-storage
-          mountPath: /etc/thanos
-        resources:
-          requests:
-            cpu: 0
-            memory: 50Mi
-          limits:
-            memory: 2Gi
+        - name: thanos-compact
+          image: thanos
+          args:
+            - compact
+            - --log.level=warn
+            - --data-dir=/var/thanos/compact
+            - --wait
+            - --objstore.config-file=/etc/thanos/config.yaml
+            - --retention.resolution-raw=1y
+            - --retention.resolution-5m=1y
+            - --retention.resolution-1h=1y
+          ports:
+            - name: http
+              containerPort: 10902
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+            periodSeconds: 90
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+            periodSeconds: 90
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/thanos/compact
+            - name: thanos-storage
+              mountPath: /etc/thanos
+          resources:
+            requests:
+              cpu: 0
+              memory: 50Mi
+            limits:
+              memory: 2Gi
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: thanos-compact
-      - name: thanos-storage
-        configMap:
-          name: thanos-storage
+        - name: data
+          persistentVolumeClaim:
+            claimName: thanos-compact
+        - name: thanos-storage
+          configMap:
+            name: thanos-storage
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -103,7 +102,7 @@ metadata:
   name: thanos-compact
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
       storage: 100Gi
