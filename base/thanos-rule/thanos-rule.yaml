@@ -10,14 +10,14 @@ metadata:
   name: thanos-rule
 spec:
   ports:
-  - port: 10902
-    protocol: TCP
-    targetPort: http
-    name: http-rule
-  - port: 10901
-    protocol: TCP
-    targetPort: grpc
-    name: grpc-rule
+    - port: 10902
+      protocol: TCP
+      targetPort: http
+      name: http-rule
+    - port: 10901
+      protocol: TCP
+      targetPort: grpc
+      name: grpc-rule
   selector:
     app: thanos-rule
   sessionAffinity: None
@@ -48,66 +48,66 @@ spec:
     spec:
       serviceAccountName: thanos-rule
       containers:
-      - name: thanos-rule
-        image: thanos
-        args:
-        - rule
-        - --log.level=info
-        - --data-dir=/var/thanos/data/
-        - --rule-file=/var/thanos/rules/*.yaml
-        - --alertmanagers.url=$(ALERTMANAGER_URL)
-        - --eval-interval=30s
-        - --alert.query-url=$(THANOS_QUERY_URL)
-        - --query.sd-files=/etc/thanos/query-sd.yaml
-        env:
-        - name: ALERTMANAGER_URL
-          value: "dns+http://alertmanager.base-namespace"
-        # external URL for rendering inside alerts
-        - name: THANOS_QUERY_URL
-          value: "https://thanos-query.base.example.com"
-        ports:
-        - name: http
-          containerPort: 10902
-        - name: grpc
-          containerPort: 10901
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: http
-            scheme: HTTP
-          periodSeconds: 15
-          successThreshold: 1
-          failureThreshold: 5
-          timeoutSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: http
-            scheme: HTTP
-          periodSeconds: 15
-          successThreshold: 1
-          timeoutSeconds: 10
-          failureThreshold: 5
-        volumeMounts:
-        - name: data
-          mountPath: /var/thanos/data
-        - name: rules
-          mountPath: /var/thanos/rules
-        - name: config
-          mountPath: /etc/thanos
-        resources:
-          requests:
-            cpu: 50m
-            memory: 200Mi
-          limits:
-            memory: 500Mi
+        - name: thanos-rule
+          image: thanos
+          args:
+            - rule
+            - --log.level=warn
+            - --data-dir=/var/thanos/data/
+            - --rule-file=/var/thanos/rules/*.yaml
+            - --alertmanagers.url=$(ALERTMANAGER_URL)
+            - --eval-interval=30s
+            - --alert.query-url=$(THANOS_QUERY_URL)
+            - --query.sd-files=/etc/thanos/query-sd.yaml
+          env:
+            - name: ALERTMANAGER_URL
+              value: "dns+http://alertmanager.base-namespace"
+            # external URL for rendering inside alerts
+            - name: THANOS_QUERY_URL
+              value: "https://thanos-query.base.example.com"
+          ports:
+            - name: http
+              containerPort: 10902
+            - name: grpc
+              containerPort: 10901
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 10
+            failureThreshold: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/thanos/data
+            - name: rules
+              mountPath: /var/thanos/rules
+            - name: config
+              mountPath: /etc/thanos
+          resources:
+            requests:
+              cpu: 50m
+              memory: 200Mi
+            limits:
+              memory: 500Mi
       volumes:
-      - name: data
-        emptyDir: {}
-      - name: rules
-        configMap:
-          defaultMode: 420
-          name: alerts
-      - name: config
-        configMap:
-          name: thanos-rule
+        - name: data
+          emptyDir: {}
+        - name: rules
+          configMap:
+            defaultMode: 420
+            name: alerts
+        - name: config
+          configMap:
+            name: thanos-rule
