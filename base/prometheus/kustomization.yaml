@@ -7,7 +7,7 @@ resources:
 images:
   - name: prometheus
     newName: prom/prometheus
-    newTag: v2.33.4
+    newTag: v2.35.0
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.24.0
+    newTag: v0.26.0
