@@ -56,10 +56,10 @@ resources:
 Note that in this case you must still follow the configuration instructions in
 the previous section, ignoring any parts for `thanos-rule` and `thanos-query`.
 
-### AWS configuration
+### AWS configuration (UW specifc)
 
-Patch the following to provide AWS credentials via Vault as outlined in [this
-documentation](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault-aws.md):
+Patch the following to provide AWS credentials via Vault as outlined in
+[vault-aws.md](https://github.com/utilitywarehouse/documentation/blob/master/infra/vault/vault-aws.md):
 
 - Prometheus `ServiceAccount` and `StatefulSet`
 - Thanos Compact `ServiceAccount` and `Deployment`
