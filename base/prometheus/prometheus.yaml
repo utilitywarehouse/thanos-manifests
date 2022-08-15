@@ -127,7 +127,7 @@ spec:
             - --log.level=warn
             - --config.file=/etc/prometheus-shared/prometheus.yaml
             - --storage.tsdb.path=/prometheus/data
-            - --storage.tsdb.retention=$(PROMETHEUS_DB_RETENTION)
+            - --storage.tsdb.retention.time=$(PROMETHEUS_DB_RETENTION)
             - --storage.tsdb.min-block-duration=2h
             - --storage.tsdb.max-block-duration=2h
             - --web.external-url=$(PROMETHEUS_URL)
