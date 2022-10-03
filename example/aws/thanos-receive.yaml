@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: thanos-receive
+  annotations:
+    vault.uw.systems/aws-role: "arn:aws:iam::000000000000:role/example-role"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thanos-receive
+spec:
+  template:
+    metadata:
+      annotations:
+        injector.tumblr.com/request: vault-sidecar-aws

@@ -5,6 +5,7 @@ resources:
   - ./thanos-rule
   - ./thanos-compact
   - ./thanos-store
+  - ./thanos-receive
   - ./prometheus
 commonLabels:
   service: monitoring
