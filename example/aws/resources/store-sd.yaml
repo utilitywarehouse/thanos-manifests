@@ -3,6 +3,8 @@
   # Prometheus sidecars for the short term metrics
   - prometheus-0.thanos-sidecar:10901
   - prometheus-1.thanos-sidecar:10901
+  # Thanos Receive store gateway for short term metrics
+  - thanos-receive:10901
   # Store gateway for long term metrics
   - thanos-store:10901
   # Thanos ruler exposes synthetic time series of the form
