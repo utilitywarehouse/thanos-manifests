@@ -3,6 +3,10 @@ kind: Kustomization
 bases:
   - ../../base/
 #  - github.com/utilitywarehouse/thanos-manifests/base
+
+# Optional, only required to enable remote-write
+  - ../../base/thanos-receive
+#  - github.com/utilitywarehouse/thanos-manifests/base/thanos-receive
 resources:
   - prometheus-ingress.yaml
   - thanos-query-ingress.yaml
@@ -10,6 +14,7 @@ resources:
 patchesStrategicMerge:
   - prometheus.yaml
   - thanos-compact.yaml
+  - thanos-receive.yaml # Optional, only required to enable remote-write
   - thanos-rule.yaml
   - thanos-store.yaml
 configMapGenerator:

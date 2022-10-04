@@ -5,7 +5,7 @@ This repository provides [Kustomize][1] base to deploy [Prometheus][2] +
 
 ## Usage
 
-To use the base, reference the remote in you `kustomization.yaml`
+To use the base, reference the remote in your `kustomization.yaml`
 
 ```
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -55,6 +55,15 @@ resources:
 
 Note that in this case you must still follow the configuration instructions in
 the previous section, ignoring any parts for `thanos-rule` and `thanos-query`.
+
+#### Enabling remote-write with thanos-receive
+
+The other optional component is thanos-receive, that provides a prometheus'
+remote-write endpoint.
+
+To deploy it, add the `thanos-receive` sub-base to your kustomize, and apply
+any patches that may be needed (in UW's case, the SA and STS labels to get S3
+credentials from vault)
 
 ### AWS configuration (UW specifc)
 
