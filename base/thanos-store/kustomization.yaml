@@ -3,6 +3,8 @@ kind: Kustomization
 commonLabels:
   service: monitoring
 resources:
+  - memcached-peers-svc.yaml
+  - memcached.yaml
   - thanos-store.yaml
 images:
   - name: thanos

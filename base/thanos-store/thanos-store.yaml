@@ -52,6 +52,19 @@ spec:
             - --log.level=warn
             - --data-dir=/var/thanos/store
             - --objstore.config-file=/etc/thanos/config.yaml
+            - |-
+              --index-cache.config="config":
+                "addresses":
+                - "dnssrv+_memcache._tcp.thanos-store-memcached-peers"
+                "dns_provider_update_interval": "10s"
+                "max_async_buffer_size": 10000
+                "max_async_concurrency": 20
+                "max_get_multi_batch_size": 0
+                "max_get_multi_concurrency": 100
+                "max_idle_connections": 100
+                "max_item_size": "1MiB"
+                "timeout": "500ms"
+              "type": "memcached"
           ports:
             - name: http
               containerPort: 10902
