@@ -53,9 +53,10 @@ spec:
           args:
             - query
             - --log.level=warn
+            - --query.auto-downsampling
             - --query.replica-label=replica
-            - --store.sd-files=/etc/thanos/store-sd.yaml
             - --store.response-timeout=15s
+            - --store.sd-files=/etc/thanos/store-sd.yaml
           ports:
             - name: http
               containerPort: 10902

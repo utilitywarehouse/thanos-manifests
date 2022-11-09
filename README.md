@@ -3,6 +3,9 @@
 This repository provides [Kustomize][1] base to deploy [Prometheus][2] +
 [Thanos][3] and example overlays for general deployment in either AWS or GCP.
 
+Using https://github.com/thanos-io/kube-thanos/tree/main/examples/all/manifests
+as upstream inspiration.
+
 ## Usage
 
 To use the base, reference the remote in your `kustomization.yaml`
@@ -31,8 +34,8 @@ You MUST provide the following ConfigMaps:
 
 Alert files MUST have `.yaml` extension.
 
-Refer to [AWS Configuration](#aws-configuration) and
-[GCP Configuration](#gcp-configuration) for provider specific requirements.
+Refer to [AWS Configuration](#aws-configuration) and [GCP
+Configuration](#gcp-configuration) for provider specific requirements.
 
 ### Additional Components
 
