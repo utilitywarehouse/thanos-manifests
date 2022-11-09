@@ -49,13 +49,16 @@ spec:
           image: thanos
           args:
             - compact
-            - --log.level=warn
+            - --block-viewer.global.sync-block-interval=1h
             - --data-dir=/var/thanos/compact
-            - --wait
+            - --delete-delay=48h
+            - --log.level=warn
             - --objstore.config-file=/etc/thanos/config.yaml
-            - --retention.resolution-raw=1y
-            - --retention.resolution-5m=1y
             - --retention.resolution-1h=1y
+            - --retention.resolution-5m=1y
+            - --retention.resolution-raw=1y
+            - --wait
+            - --wait-interval=1h
           ports:
             - name: http
               containerPort: 10902
