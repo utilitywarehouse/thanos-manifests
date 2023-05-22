@@ -6,6 +6,8 @@ resources:
   - memcached-peers-svc.yaml
   - memcached.yaml
   - thanos-store.yaml
+patches:
+  - path: memcached-resource-patch.yaml
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
