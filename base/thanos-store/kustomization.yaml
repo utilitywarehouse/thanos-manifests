@@ -11,4 +11,4 @@ patches:
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.30.1
+    newTag: v0.31.0
