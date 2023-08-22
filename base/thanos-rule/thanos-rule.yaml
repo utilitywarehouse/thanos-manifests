@@ -59,6 +59,9 @@ spec:
             - --eval-interval=30s
             - --alert.query-url=$(THANOS_QUERY_URL)
             - --query.sd-files=/etc/thanos/query-sd.yaml
+            - --label=cloud_provider=$(CLOUD_PROVIDER)
+            - --label=uw_environment=$(UW_ENVIROMENT)
+            - --label=kubernetes_cluster=$(KUBERNETES_CLUSTER)
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
