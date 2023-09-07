@@ -91,6 +91,8 @@ spec:
               memory: 50Mi
             limits:
               memory: 2Gi
+      securityContext:
+        fsGroup: 1001
       volumes:
         - name: data
           persistentVolumeClaim:

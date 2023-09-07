@@ -91,6 +91,8 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/thanos
+      securityContext:
+        fsGroup: 1001
       volumes:
         - name: config
           configMap:
