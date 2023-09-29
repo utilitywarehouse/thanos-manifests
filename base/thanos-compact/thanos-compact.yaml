@@ -50,6 +50,7 @@ spec:
           args:
             - compact
             - --block-viewer.global.sync-block-interval=1h
+            - --compact.skip-block-with-out-of-order-chunks # https://github.com/thanos-io/thanos/issues/3442#issuecomment-1336139960
             - --data-dir=/var/thanos/compact
             - --delete-delay=48h
             - --log.level=warn
