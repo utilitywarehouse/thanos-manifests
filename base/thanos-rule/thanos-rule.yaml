@@ -55,6 +55,7 @@ spec:
             - --log.level=warn
             - --data-dir=/var/thanos/data/
             - --rule-file=/var/thanos/rules/*.yaml
+            - --rule-file=/var/thanos/recording/*.yaml
             - --alertmanagers.url=$(ALERTMANAGER_URL)
             - --eval-interval=30s
             - --alert.query-url=$(THANOS_QUERY_URL)
