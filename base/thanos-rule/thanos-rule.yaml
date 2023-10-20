@@ -63,6 +63,8 @@ spec:
             - --label=cloud_provider="$(CLOUD_PROVIDER)"
             - --label=uw_environment="$(UW_ENVIROMENT)"
             - --label=kubernetes_cluster="$(KUBERNETES_CLUSTER)"
+            - --label=cluster="$(KUBERNETES_CLUSTER)"
+            - --label=provider="$(CLOUD_PROVIDER)"
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
