@@ -4,7 +4,7 @@ bases:
   - ../../base/
 #  - github.com/utilitywarehouse/thanos-manifests/base
 
-# Optional, only required to enable remote-write
+  # Optional, only required to enable remote-write
   - ../../base/thanos-receive
 #  - github.com/utilitywarehouse/thanos-manifests/base/thanos-receive
 resources:
