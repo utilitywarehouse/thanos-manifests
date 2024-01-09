@@ -6,5 +6,7 @@ resources:
   - ./thanos-compact
   - ./thanos-store
   - ./prometheus
-commonLabels:
-  service: monitoring
+labels:
+  - includeSelectors: true
+    pairs:
+      service: monitoring

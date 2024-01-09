@@ -1,7 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-commonLabels:
-  service: monitoring
 resources:
   - memcached-peers-svc.yaml
   - memcached.yaml
@@ -12,3 +10,7 @@ images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.32.2
+labels:
+  - includeSelectors: true
+    pairs:
+      service: monitoring
