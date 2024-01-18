@@ -5,10 +5,10 @@ resources:
 images:
   - name: prometheus
     newName: prom/prometheus
-    newTag: v2.47.0
+    newTag: v2.49.1
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.32.2
+    newTag: v0.33.0
 labels:
   - includeSelectors: true
     pairs:
