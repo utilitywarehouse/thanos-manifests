@@ -8,7 +8,7 @@ images:
     newTag: v2.49.1
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.33.0
+    newTag: v0.34.0
 labels:
   - includeSelectors: true
     pairs:
