@@ -56,7 +56,7 @@ spec:
             - --data-dir=/var/thanos/data/
             - --rule-file=/var/thanos/rules/*.yaml
             - --rule-file=/var/thanos/recording/*.yaml
-            - --alertmanagers.url=$(ALERTMANAGER_URL)
+            - --alertmanagers.config-file=/etc/alertmanager/config.yaml
             - --eval-interval=30s
             - --alert.query-url=$(THANOS_QUERY_URL)
             - --query.sd-files=/etc/thanos/query-sd.yaml
@@ -101,6 +101,8 @@ spec:
               mountPath: /var/thanos/rules
             - name: config
               mountPath: /etc/thanos
+            - name: am-config
+              mountPath: /etc/alertmanager
           resources:
             requests:
               cpu: 0m
@@ -120,3 +122,6 @@ spec:
         - name: config
           configMap:
             name: thanos-rule
+        - name: am-config
+          secret:
+            secretName: thanos-rule-alertmanager
