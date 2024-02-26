@@ -5,7 +5,7 @@ resources:
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.34.0
+    newTag: v0.34.1
 labels:
   - includeSelectors: true
     pairs:
