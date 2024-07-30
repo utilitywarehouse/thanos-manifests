@@ -13,8 +13,16 @@ substituteENV() {
     done;
 }
 
+triggerReload() {
+    echo "triggering thanos rule reload..."
+    if [[ $(curl -s -w "%{http_code}" -X POST localhost:10902/-/reload) != 200 ]]; then 
+        echo "error reloading alert rules"
+    fi
+}
+
 # do initial ENV substituting
 substituteENV
+triggerReload
 
 # on projected module changes, kube creates new dir "..yyyy_mm_dd_xxx"
 # and then moves symlinked dir "..data" to that and deletes old dir
@@ -33,7 +41,7 @@ inotifywait -m -e delete --format '%e %w %f' "$templatedRulesPath" |\
 while read -r event path name; do
     echo "processing... $event $path $name";
     if [[ "$event" != "DELETE,ISDIR" || ! "$name" =~ ^\.{2}.+\.[[:digit:]]+$ ]]; then
-    continue
+        continue
     fi
 
     # clear old rendered rules 
@@ -41,10 +49,6 @@ while read -r event path name; do
     rm -f "$renderedRulesPath"/*
     
     substituteENV
-
-    echo "triggering thanos rule reload..."
-    if [[ $(curl -s -w "%{http_code}" -X POST localhost:10902/-/reload) != 200 ]]; then 
-    echo "error reloading alert rules"
-    fi
+    triggerReload
 done;
 echo "error rules-watcher stopped";
