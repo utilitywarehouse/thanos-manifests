@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-rule
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: rule-watcher
+          image: alpine
+          restartPolicy: Always
+          command: ["/bin/sh", "/scripts/rule-watcher"]
+          env:
+            - name: RENDERED_RULES_PATH
+              value: /var/thanos/rules
+            - name: TEMPLATED_RULES_PATH
+              value: /var/thanos/rule-templates
+          volumeMounts:
+            - name: rules-rendered
+              mountPath: /var/thanos/rules
+            - name: rules-projected
+              mountPath: /var/thanos/rule-templates
+            - name: rule-watcher
+              mountPath: /scripts
+      containers:
+        - name: thanos-rule
+          volumeMounts:
+            - name: rules-rendered
+              mountPath: /var/thanos/rules
+      volumes:
+        - name: rules
+          $patch: delete
+        - name: rule-watcher
+          configMap:
+            name: rule-watcher
+        - name: rules-rendered
+          emptyDir: {}
+        - name: rules-projected
+          projected:
+            sources:
+              - configMap:
+                  name: alerts
