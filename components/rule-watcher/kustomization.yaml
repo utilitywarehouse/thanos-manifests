@@ -5,6 +5,6 @@ patches:
   - path: thanos-rule.yaml
 
 configMapGenerator:
-  - name: rules-watcher-config
+  - name: rule-watcher
     files:
-      - rules-watcher.sh
+      - rule-watcher

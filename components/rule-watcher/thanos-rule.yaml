@@ -6,10 +6,10 @@ spec:
   template:
     spec:
       initContainers:
-        - name: rules-watcher
+        - name: rule-watcher
           image: alpine
           restartPolicy: Always
-          command: ["/bin/sh", "/scripts/rules-watcher.sh"]
+          command: ["/bin/sh", "/scripts/rule-watcher"]
           env:
             - name: RENDERED_RULES_PATH
               value: /var/thanos/rules
@@ -20,7 +20,7 @@ spec:
               mountPath: /var/thanos/rules
             - name: rules-projected
               mountPath: /var/thanos/rule-templates
-            - name: rules-watcher-config
+            - name: rule-watcher
               mountPath: /scripts
       containers:
         - name: thanos-rule
@@ -30,9 +30,9 @@ spec:
       volumes:
         - name: rules
           $patch: delete
-        - name: rules-watcher-config
+        - name: rule-watcher
           configMap:
-            name: rules-watcher-config
+            name: rule-watcher
         - name: rules-rendered
           emptyDir: {}
         - name: rules-projected
