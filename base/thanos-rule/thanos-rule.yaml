@@ -58,16 +58,22 @@ spec:
             - --rule-file=/var/thanos/recording/*.yaml
             - --alertmanagers.config-file=/etc/alertmanager/config.yaml
             - --eval-interval=30s
+            - --alert.label-drop="replica"
             - --alert.query-url=$(THANOS_QUERY_URL)
             - --query.sd-files=/etc/thanos/query-sd.yaml
             - --label=cloud_provider="$(CLOUD_PROVIDER)"
-            - --label=uw_environment="$(UW_ENVIROMENT)"
-            - --label=kubernetes_cluster="$(KUBERNETES_CLUSTER)"
             - --label=cluster="$(KUBERNETES_CLUSTER)"
+            - --label=kubernetes_cluster="$(KUBERNETES_CLUSTER)"
             - --label=provider="$(CLOUD_PROVIDER)"
+            - --label=replica="$(POD_NAME)"
+            - --label=uw_environment="$(UW_ENVIROMENT)"
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             # external URL for rendering inside alerts
             - name: THANOS_QUERY_URL
               value: "https://thanos-query.base.example.com"
