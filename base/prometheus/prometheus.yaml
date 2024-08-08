@@ -138,7 +138,7 @@ spec:
             - name: PROMETHEUS_URL
               value: "https://prometheus.base.example.com"
             - name: PROMETHEUS_DB_RETENTION
-              value: "1d"
+              value: "2d"
           image: prometheus
           livenessProbe:
             failureThreshold: 3
