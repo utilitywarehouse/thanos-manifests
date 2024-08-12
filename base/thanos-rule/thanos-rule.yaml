@@ -28,7 +28,7 @@ metadata:
   name: thanos-rule
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: thanos-rule
   labels:
@@ -40,6 +40,7 @@ spec:
     matchLabels:
       app: thanos-rule
       app.kubernetes.io/name: thanos-rule
+  serviceName: thanos-rule
   template:
     metadata:
       labels:
