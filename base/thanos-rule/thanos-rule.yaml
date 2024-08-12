@@ -28,7 +28,7 @@ metadata:
   name: thanos-rule
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: thanos-rule
   labels:
@@ -40,6 +40,7 @@ spec:
     matchLabels:
       app: thanos-rule
       app.kubernetes.io/name: thanos-rule
+  serviceName: thanos-rule
   template:
     metadata:
       labels:
@@ -119,8 +120,6 @@ spec:
       securityContext:
         fsGroup: 1001
       volumes:
-        - name: data
-          emptyDir: {}
         - name: rules
           configMap:
             defaultMode: 420
@@ -131,3 +130,12 @@ spec:
         - name: am-config
           secret:
             secretName: thanos-rule-alertmanager
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
