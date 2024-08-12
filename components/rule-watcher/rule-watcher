@@ -9,7 +9,10 @@ shellFormat=$SHELL_FORMAT
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
     find "$templatedRulesPath" -type f | while read -r file; do
-        envsubst "$shellFormat" < "$file" > "$renderedRulesPath/$(basename "$file")";
+        f="$(basename "$file")"
+        # If the file has a .tmpl or .tpl extension - remove it
+        f=${f%".tmpl"} && f=${f%".tpl"}
+        envsubst "$shellFormat" < "$file" > "$renderedRulesPath/$f";
     done;
 }
 

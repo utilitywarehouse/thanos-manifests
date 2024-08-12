@@ -18,8 +18,6 @@ spec:
           volumeMounts:
             - name: rules-rendered
               mountPath: /var/thanos/rules
-            - name: rules-projected
-              mountPath: /var/thanos/rule-templates
             - name: rule-watcher
               mountPath: /scripts
       containers:
@@ -35,8 +33,3 @@ spec:
             name: rule-watcher
         - name: rules-rendered
           emptyDir: {}
-        - name: rules-projected
-          projected:
-            sources:
-              - configMap:
-                  name: alerts
