@@ -56,6 +56,7 @@ spec:
             - --query.auto-downsampling
             - --query.promql-engine=thanos
             - --query.replica-label=replica
+            - --query.replica-label=rule_replica
             - --store.response-timeout=15s
             - --store.sd-files=/etc/thanos/store-sd.yaml
           ports:
