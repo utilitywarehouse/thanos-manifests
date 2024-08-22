@@ -21,6 +21,7 @@ spec:
   selector:
     app: thanos-rule
   sessionAffinity: None
+  clusterIP: None
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -60,6 +61,7 @@ spec:
             - --alertmanagers.config-file=/etc/alertmanager/config.yaml
             - --eval-interval=30s
             - --alert.label-drop="replica"
+            - --alert.label-drop="rule_replica"
             - --alert.query-url=$(THANOS_QUERY_URL)
             - --query.sd-files=/etc/thanos/query-sd.yaml
             - --label=cloud_provider="$(CLOUD_PROVIDER)"
@@ -67,7 +69,9 @@ spec:
             - --label=kubernetes_cluster="$(KUBERNETES_CLUSTER)"
             - --label=provider="$(CLOUD_PROVIDER)"
             - --label=replica="$(POD_NAME)"
+            - --label=rule_replica="$(POD_NAME)"
             - --label=uw_environment="$(UW_ENVIROMENT)"
+            - --objstore.config-file=/etc/thanos/config.yaml
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
@@ -107,7 +111,11 @@ spec:
             - name: rules
               mountPath: /var/thanos/rules
             - name: config
-              mountPath: /etc/thanos
+              mountPath: /etc/thanos/query-sd.yaml
+              subPath: query-sd.yaml
+            - name: thanos-storage
+              mountPath: /etc/thanos/config.yaml
+              subPath: config.yaml
             - name: am-config
               mountPath: /etc/alertmanager
           resources:
@@ -127,6 +135,9 @@ spec:
         - name: config
           configMap:
             name: thanos-rule
+        - name: thanos-storage
+          configMap:
+            name: thanos-storage
         - name: am-config
           secret:
             secretName: thanos-rule-alertmanager
