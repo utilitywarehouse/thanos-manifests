@@ -59,7 +59,7 @@ spec:
             - --rule-file=/var/thanos/rules/*.yaml
             - --rule-file=/var/thanos/recording/*.yaml
             - --alertmanagers.config-file=/etc/alertmanager/config.yaml
-            - --eval-interval=30s
+            - --eval-interval=60s
             - --alert.label-drop="replica"
             - --alert.label-drop="rule_replica"
             - --alert.query-url=$(THANOS_QUERY_URL)
