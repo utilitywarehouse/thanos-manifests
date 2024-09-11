@@ -28,8 +28,6 @@ spec:
             - name: rules-rendered
               mountPath: /var/thanos/rules
       volumes:
-        - name: rules
-          $patch: delete
         - name: rule-watcher
           configMap:
             name: rule-watcher
