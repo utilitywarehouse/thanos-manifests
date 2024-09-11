@@ -11,6 +11,8 @@ spec:
           restartPolicy: Always
           command: ["/bin/sh", "/scripts/rule-watcher"]
           env:
+            - name: RELOAD_PORT
+              value: "10902"
             - name: RENDERED_RULES_PATH
               value: /var/thanos/rules
             - name: TEMPLATED_RULES_PATH
@@ -26,8 +28,6 @@ spec:
             - name: rules-rendered
               mountPath: /var/thanos/rules
       volumes:
-        - name: rules
-          $patch: delete
         - name: rule-watcher
           configMap:
             name: rule-watcher

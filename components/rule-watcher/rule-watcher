@@ -2,23 +2,19 @@
 
 apk add --no-cache  curl gettext inotify-tools;
 
-templatedRulesPath=$TEMPLATED_RULES_PATH
-renderedRulesPath=$RENDERED_RULES_PATH
-shellFormat=$SHELL_FORMAT
-
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
-    find "$templatedRulesPath" -type f | while read -r file; do
+    find "$TEMPLATED_RULES_PATH" -type f | while read -r file; do
         f="$(basename "$file")"
         # If the file has a .tmpl or .tpl extension - remove it
         f=${f%".tmpl"} && f=${f%".tpl"}
-        envsubst "$shellFormat" < "$file" > "$renderedRulesPath/$f";
+        envsubst "$SHELL_FORMAT" < "$file" > "$RENDERED_RULES_PATH/$f";
     done;
 }
 
 triggerReload() {
     echo "triggering thanos rule reload..."
-    if [ "$(curl -s -w "%{http_code}" -X POST localhost:10902/-/reload)" != 200 ]; then 
+    if [ "$(curl -s -w "%{http_code}" -X POST "localhost:$RELOAD_PORT/-/reload")" != 200 ]; then 
         echo "error reloading alert rules"
     fi
 }
@@ -27,7 +23,7 @@ triggerReload() {
 substituteENV
 
 # make sure thanos container is ready for trigger
-while ! nc -w 1 127.0.0.1 10902; do sleep 1; done
+while ! nc -w 1 127.0.0.1 "$RELOAD_PORT"; do sleep 1; done
 
 triggerReload
 
@@ -44,20 +40,20 @@ triggerReload
 #     /var/thanos/rule-templates/ DELETE,ISDIR ..2024_07_29_13_27_29.567810463
 
 echo "starting rule-watcher...";
-inotifywait -m -e delete --format '%e %w %f' "$templatedRulesPath" |\
+inotifywait -m -e delete --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
     echo "processing... $event $path $name";
     if [ "$event" != "DELETE,ISDIR" ]; then
         continue
     fi
     # match name to '..2024_07_29_13_27_29.567810463' format
-    if ! expr "X$name" : 'X\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
+    if ! expr "$name" : '\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
         continue
     fi
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
-    rm -f "$renderedRulesPath"/*
+    rm -f "$RENDERED_RULES_PATH"/*
     
     substituteENV
     triggerReload

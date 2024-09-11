@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: rule-watcher
+          image: alpine
+          restartPolicy: Always
+          command: ["/bin/sh", "/scripts/rule-watcher"]
+          env:
+            - name: RELOAD_PORT
+              value: "9090"
+            - name: RENDERED_RULES_PATH
+              value: /var/prometheus/rules
+            - name: TEMPLATED_RULES_PATH
+              value: /var/prometheus/rule-templates
+          volumeMounts:
+            - name: rules-rendered
+              mountPath: /var/prometheus/rules
+            - name: rule-watcher
+              mountPath: /scripts
+      containers:
+        - name: prometheus
+          volumeMounts:
+            - name: rules-rendered
+              mountPath: /var/prometheus/rules
+      volumes:
+        - name: rule-watcher
+          configMap:
+            name: rule-watcher
+        - name: rules-rendered
+          emptyDir: {}
