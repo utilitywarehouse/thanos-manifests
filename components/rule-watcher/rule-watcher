@@ -2,6 +2,8 @@
 
 apk add --no-cache  curl gettext inotify-tools;
 
+trap 'echo TERM signal received exiting...; exit' SIGINT SIGTERM
+
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
     find "$TEMPLATED_RULES_PATH" -type f | while read -r file; do
