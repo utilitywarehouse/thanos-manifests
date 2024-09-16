@@ -5,5 +5,3 @@ configMapGenerator:
   - name: rule-watcher
     files:
       - rule-watcher
-    options:
-      disableNameSuffixHash: true
