@@ -42,7 +42,7 @@ triggerReload
 #     /var/thanos/rule-templates/ DELETE,ISDIR ..2024_07_29_13_27_29.567810463
 
 echo "starting rule-watcher...";
-inotifywait -m -e delete --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
+inotifywait -m -r -e delete --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
     echo "processing... $event $path $name";
     if [ "$event" != "DELETE,ISDIR" ]; then
