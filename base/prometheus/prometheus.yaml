@@ -99,8 +99,6 @@ spec:
             - --prometheus.url=http://127.0.0.1:9090
             - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
             - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
-            - --storage.tsdb.max-block-duration=2h
-            - --storage.tsdb.min-block-duration=2h
             - --tsdb.path=/prometheus/data
           ports:
             - name: http
@@ -128,6 +126,8 @@ spec:
           args:
             - --config.file=/etc/prometheus-shared/prometheus.yaml
             - --log.level=warn
+            - --storage.tsdb.max-block-duration=2h
+            - --storage.tsdb.min-block-duration=2h
             - --storage.tsdb.path=/prometheus/data
             - --storage.tsdb.retention.size=$(PROMETHEUS_DB_RETENTION_SIZE)
             - --storage.tsdb.retention.time=$(PROMETHEUS_DB_RETENTION)
