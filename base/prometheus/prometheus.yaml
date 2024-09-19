@@ -95,11 +95,13 @@ spec:
           args:
             - sidecar
             - --log.level=warn
-            - --prometheus.url=http://127.0.0.1:9090
-            - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
-            - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
-            - --tsdb.path=/prometheus/data
             - --objstore.config-file=/etc/thanos/config.yaml
+            - --prometheus.url=http://127.0.0.1:9090
+            - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
+            - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
+            - --storage.tsdb.max-block-duration=2h
+            - --storage.tsdb.min-block-duration=2h
+            - --tsdb.path=/prometheus/data
           ports:
             - name: http
               containerPort: 10902
