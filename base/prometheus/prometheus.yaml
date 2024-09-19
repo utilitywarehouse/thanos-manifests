@@ -124,21 +124,22 @@ spec:
               mountPath: /etc/thanos
         - name: prometheus
           args:
-            - --log.level=warn
             - --config.file=/etc/prometheus-shared/prometheus.yaml
+            - --log.level=warn
             - --storage.tsdb.path=/prometheus/data
+            - --storage.tsdb.retention.size=$(PROMETHEUS_DB_RETENTION_SIZE)
             - --storage.tsdb.retention.time=$(PROMETHEUS_DB_RETENTION)
-            - --storage.tsdb.min-block-duration=2h
-            - --storage.tsdb.max-block-duration=2h
-            - --web.external-url=$(PROMETHEUS_URL)
-            - --web.enable-lifecycle
             - --web.console.libraries=/usr/share/prometheus/console_libraries
             - --web.console.templates=/usr/share/prometheus/consoles
+            - --web.enable-lifecycle
+            - --web.external-url=$(PROMETHEUS_URL)
           env:
             - name: PROMETHEUS_URL
               value: "https://prometheus.base.example.com"
             - name: PROMETHEUS_DB_RETENTION
-              value: "2d"
+              value: "30d"
+            - name: PROMETHEUS_DB_RETENTION_SIZE
+              value: "180GB" # Set to 90% size of the disk
           image: prometheus
           livenessProbe:
             failureThreshold: 3
