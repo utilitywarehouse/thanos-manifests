@@ -3,8 +3,9 @@
 apk add --no-cache  curl gettext inotify-tools;
 
 cleanup() {
-    echo "TERM signal received, cleaning up..."
+    echo "stopping..."
     kill "$INOTIFY_PID"
+    echo "stopped inotifywait"
     exit
 }
 
@@ -47,7 +48,7 @@ triggerReload
 #     /var/thanos/rule-templates/ DELETE test1.yaml
 #     /var/thanos/rule-templates/ DELETE,ISDIR ..2024_07_29_13_27_29.567810463
 
-echo "starting rule-watcher...";
+echo "starting rule-watcher..."
 inotifywait -m -r -e delete --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
     echo "processing... $event $path $name";
@@ -70,3 +71,5 @@ done &
 INOTIFY_PID=$!
 
 wait $INOTIFY_PID
+
+echo "error: rule-watcher stopped"
