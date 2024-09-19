@@ -2,7 +2,13 @@
 
 apk add --no-cache  curl gettext inotify-tools;
 
-trap 'echo TERM signal received exiting...; exit' SIGINT SIGTERM
+cleanup() {
+    echo "TERM signal received, cleaning up..."
+    kill "$INOTIFY_PID"
+    exit
+}
+
+trap cleanup SIGINT SIGTERM
 
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
@@ -59,5 +65,8 @@ while read -r event path name; do
     
     substituteENV
     triggerReload
-done;
-echo "error rule-watcher stopped";
+done &
+
+INOTIFY_PID=$!
+
+wait $INOTIFY_PID
