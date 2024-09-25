@@ -139,9 +139,9 @@ spec:
             - name: PROMETHEUS_URL
               value: "https://prometheus.base.example.com"
             - name: PROMETHEUS_DB_RETENTION
-              value: "30d"
+              value: "2d"
             - name: PROMETHEUS_DB_RETENTION_SIZE
-              value: "180GB" # Set to 90% size of the disk
+              value: "0" # Disabled by default
           image: prometheus
           livenessProbe:
             failureThreshold: 3
