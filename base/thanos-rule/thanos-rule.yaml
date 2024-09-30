@@ -63,7 +63,7 @@ spec:
             - --alert.label-drop="replica"
             - --alert.label-drop="rule_replica"
             - --alert.query-url=$(THANOS_QUERY_URL)
-            - --query.sd-files=/etc/thanos/query-sd.yaml
+            - --query.config-file=/etc/thanos/query-config.yaml
             - --label=cloud_provider="$(CLOUD_PROVIDER)"
             - --label=cluster="$(KUBERNETES_CLUSTER)"
             - --label=kubernetes_cluster="$(KUBERNETES_CLUSTER)"
@@ -111,8 +111,8 @@ spec:
             - name: rules
               mountPath: /var/thanos/rules
             - name: config
-              mountPath: /etc/thanos/query-sd.yaml
-              subPath: query-sd.yaml
+              mountPath: /etc/thanos/query-config.yaml
+              subPath: query-config.yaml
             - name: thanos-storage
               mountPath: /etc/thanos/config.yaml
               subPath: config.yaml
