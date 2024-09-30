@@ -125,6 +125,7 @@ spec:
         - name: prometheus
           args:
             - --config.file=/etc/prometheus-shared/prometheus.yaml
+            - --enable-feature=memory-snapshot-on-shutdown
             - --log.level=warn
             - --storage.tsdb.max-block-duration=2h
             - --storage.tsdb.min-block-duration=2h
