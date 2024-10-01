@@ -54,7 +54,7 @@ spec:
           image: thanos
           args:
             - rule
-            - --log.level=warn
+            - --log.level=error
             - --data-dir=/var/thanos/data/
             - --rule-file=/var/thanos/rules/*.yaml
             - --rule-file=/var/thanos/recording/*.yaml
