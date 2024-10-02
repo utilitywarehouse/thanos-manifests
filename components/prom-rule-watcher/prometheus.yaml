@@ -17,6 +17,14 @@ spec:
               value: /var/prometheus/rules
             - name: TEMPLATED_RULES_PATH
               value: /var/prometheus/rule-templates
+          startupProbe:
+            exec:
+              command:
+                - test
+                - -e
+                - /var/prometheus/rules/rule-watcher-rules-ready
+            initialDelaySeconds: 5
+            periodSeconds: 5
           volumeMounts:
             - name: rules-rendered
               mountPath: /var/prometheus/rules

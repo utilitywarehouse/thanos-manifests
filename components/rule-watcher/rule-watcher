@@ -19,6 +19,7 @@ substituteENV() {
         f=${f%".tmpl"} && f=${f%".tpl"}
         envsubst "$SHELL_FORMAT" < "$file" > "$RENDERED_RULES_PATH/$f";
     done;
+    touch "$RENDERED_RULES_PATH/rule-watcher-rules-ready"
 }
 
 triggerReload() {
@@ -30,11 +31,6 @@ triggerReload() {
 
 # do initial ENV substituting
 substituteENV
-
-# make sure thanos container is ready for trigger
-while ! nc -w 1 127.0.0.1 "$RELOAD_PORT"; do sleep 1; done
-
-triggerReload
 
 # on projected module changes, kube creates new dir "..yyyy_mm_dd_xxx"
 # and then moves symlinked dir "..data" to that and deletes old dir
