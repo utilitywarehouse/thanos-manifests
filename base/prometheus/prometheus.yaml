@@ -89,9 +89,11 @@ spec:
                         - prometheus
                 topologyKey: kubernetes.io/hostname
               weight: 100
-      containers:
+      initContainers:
+        # prometheus should only start once config file is ready
         - name: thanos-sidecar
           image: thanos
+          restartPolicy: Always
           args:
             - sidecar
             - --log.level=warn
@@ -100,6 +102,13 @@ spec:
             - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
             - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
             - --tsdb.path=/prometheus/data
+          startupProbe:
+            exec:
+              command:
+                - test
+                - -e
+                - /etc/prometheus-shared/prometheus.yaml
+            periodSeconds: 5
           ports:
             - name: http
               containerPort: 10902
@@ -122,6 +131,7 @@ spec:
               mountPath: /etc/alerts
             - name: thanos-storage
               mountPath: /etc/thanos
+      containers:
         - name: prometheus
           args:
             - --config.file=/etc/prometheus-shared/prometheus.yaml
@@ -145,12 +155,12 @@ spec:
               value: "0" # Disabled by default
           image: prometheus
           livenessProbe:
-            failureThreshold: 3
+            failureThreshold: 6
             httpGet:
               path: /-/healthy
               port: web
               scheme: HTTP
-            periodSeconds: 60
+            periodSeconds: 15
             successThreshold: 1
             timeoutSeconds: 1
           ports:
@@ -158,12 +168,12 @@ spec:
               name: web
               protocol: TCP
           readinessProbe:
-            failureThreshold: 3
+            failureThreshold: 6
             httpGet:
               path: /-/ready
               port: web
               scheme: HTTP
-            periodSeconds: 60
+            periodSeconds: 15
             successThreshold: 1
             timeoutSeconds: 1
           resources:
