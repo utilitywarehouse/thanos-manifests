@@ -88,6 +88,12 @@ spec:
               "metafile_exists_ttl": "2h"
               "metafile_max_size": "1MiB"
               "type": "memcached"
+            - |
+               --tracing.config=type: OTLP
+               config:
+                 client_type: "grpc"
+                 insecure: true
+                 endpoint: "dns:///otel-collector.otel:4317"
           env:
             - name: "MEMCACHED_SVC"
               value: "thanos-store-memcached-peers"

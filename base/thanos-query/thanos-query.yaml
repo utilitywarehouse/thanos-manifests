@@ -59,6 +59,12 @@ spec:
             - --query.replica-label=rule_replica
             - --store.response-timeout=15s
             - --store.sd-files=/etc/thanos/store-sd.yaml
+            - |
+               --tracing.config=type: OTLP
+               config:
+                 client_type: "grpc"
+                 insecure: true
+                 endpoint: "dns:///otel-collector.otel:4317"
           ports:
             - name: http
               containerPort: 10902

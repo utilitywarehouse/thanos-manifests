@@ -71,6 +71,12 @@ spec:
             - --label=rule_replica="$(POD_NAME)"
             - --label=uw_environment="$(UW_ENVIROMENT)"
             - --objstore.config-file=/etc/thanos/config.yaml
+            - |
+               --tracing.config=type: OTLP
+               config:
+                 client_type: "grpc"
+                 insecure: true
+                 endpoint: "dns:///otel-collector.otel:4317"
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
