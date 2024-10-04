@@ -65,6 +65,14 @@ spec:
                  client_type: "grpc"
                  insecure: true
                  endpoint: "dns:///otel-collector.otel:4317"
+                 resource_attributes:
+                   k8s.namespace.name: "$(POD_NAMESPACE)"
+                   uw.team: "system"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           ports:
             - name: http
               containerPort: 10902
