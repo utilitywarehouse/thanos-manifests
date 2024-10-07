@@ -71,15 +71,7 @@ spec:
             - --label=rule_replica="$(POD_NAME)"
             - --label=uw_environment="$(UW_ENVIROMENT)"
             - --objstore.config-file=/etc/thanos/config.yaml
-            - |
-               --tracing.config=type: OTLP
-               config:
-                 client_type: "grpc"
-                 insecure: true
-                 endpoint: "dns:///otel-collector.otel:4317"
-                 resource_attributes:
-                   k8s.namespace.name: $(POD_NAMESPACE)
-                   uw.team: "system"
+            - --tracing.config-file=/etc/thanos/tracing-config.yaml
           env:
             - name: ALERTMANAGER_URL
               value: "dns+http://alertmanager.base-namespace"
@@ -125,6 +117,9 @@ spec:
             - name: config
               mountPath: /etc/thanos/query-config.yaml
               subPath: query-config.yaml
+            - name: config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
             - name: thanos-storage
               mountPath: /etc/thanos/config.yaml
               subPath: config.yaml
