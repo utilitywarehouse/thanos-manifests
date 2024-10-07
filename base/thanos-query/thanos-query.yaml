@@ -98,9 +98,15 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/thanos
+            - name: tracing-config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
       securityContext:
         fsGroup: 1001
       volumes:
         - name: config
           configMap:
             name: thanos-query
+        - name: tracing-config
+          configMap:
+            name: thanos-tracing
