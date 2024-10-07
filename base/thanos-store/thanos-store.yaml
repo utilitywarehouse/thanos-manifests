@@ -88,15 +88,7 @@ spec:
               "metafile_exists_ttl": "2h"
               "metafile_max_size": "1MiB"
               "type": "memcached"
-            - |
-               --tracing.config=type: OTLP
-               config:
-                 client_type: "grpc"
-                 insecure: true
-                 endpoint: "dns:///otel-collector.otel:4317"
-                 resource_attributes:
-                   k8s.namespace.name: "$(POD_NAMESPACE)"
-                   uw.team: "system"
+            - --tracing.config-file=/etc/thanos/tracing-config.yaml
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -132,6 +124,9 @@ spec:
               mountPath: /var/thanos/store
             - name: thanos-storage
               mountPath: /etc/thanos
+            - name: tracing-config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
           resources:
             requests:
               cpu: 0m
@@ -145,6 +140,9 @@ spec:
         - name: thanos-storage
           configMap:
             name: thanos-storage
+        - name: tracing-config
+          configMap:
+            name: thanos-store-tracing
   volumeClaimTemplates:
     - metadata:
         name: data

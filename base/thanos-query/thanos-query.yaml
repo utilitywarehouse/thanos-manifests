@@ -59,15 +59,7 @@ spec:
             - --query.replica-label=rule_replica
             - --store.response-timeout=15s
             - --store.sd-files=/etc/thanos/store-sd.yaml
-            - |
-               --tracing.config=type: OTLP
-               config:
-                 client_type: "grpc"
-                 insecure: true
-                 endpoint: "dns:///otel-collector.otel:4317"
-                 resource_attributes:
-                   k8s.namespace.name: "$(POD_NAMESPACE)"
-                   uw.team: "system"
+            - --tracing.config-file=/etc/thanos/tracing-config.yaml
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -106,9 +98,15 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/thanos
+            - name: tracing-config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
       securityContext:
         fsGroup: 1001
       volumes:
         - name: config
           configMap:
             name: thanos-query
+        - name: tracing-config
+          configMap:
+            name: thanos-query-tracing
