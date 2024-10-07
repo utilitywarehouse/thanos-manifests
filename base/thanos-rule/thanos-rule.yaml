@@ -117,12 +117,12 @@ spec:
             - name: config
               mountPath: /etc/thanos/query-config.yaml
               subPath: query-config.yaml
+            - name: config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
             - name: thanos-storage
               mountPath: /etc/thanos/config.yaml
               subPath: config.yaml
-            - name: tracing-config
-              mountPath: /etc/thanos/tracing-config.yaml
-              subPath: tracing-config.yaml
             - name: am-config
               mountPath: /etc/alertmanager
           resources:
@@ -145,9 +145,6 @@ spec:
         - name: thanos-storage
           configMap:
             name: thanos-storage
-        - name: tracing-config
-          configMap:
-            name: thanos-rule-tracing
         - name: am-config
           secret:
             secretName: thanos-rule-alertmanager
