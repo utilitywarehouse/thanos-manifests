@@ -124,6 +124,9 @@ spec:
               mountPath: /var/thanos/store
             - name: thanos-storage
               mountPath: /etc/thanos
+            - name: tracing-config
+              mountPath: /etc/thanos/tracing-config.yaml
+              subPath: tracing-config.yaml
           resources:
             requests:
               cpu: 0m
@@ -137,6 +140,9 @@ spec:
         - name: thanos-storage
           configMap:
             name: thanos-storage
+        - name: tracing-config
+          configMap:
+            name: thanos-tracing
   volumeClaimTemplates:
     - metadata:
         name: data
