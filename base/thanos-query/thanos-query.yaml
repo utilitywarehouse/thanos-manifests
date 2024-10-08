@@ -59,7 +59,7 @@ spec:
             - --query.replica-label=rule_replica
             - --store.response-timeout=15s
             - --store.sd-files=/etc/thanos/store-sd.yaml
-            - --tracing.config-file=/etc/thanos/tracing-config.yaml
+            - --tracing.config-file=/etc/thanos/tracing/config.yaml
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -99,8 +99,7 @@ spec:
             - name: config
               mountPath: /etc/thanos
             - name: tracing-config
-              mountPath: /etc/thanos/tracing-config.yaml
-              subPath: tracing-config.yaml
+              mountPath: /etc/thanos/tracing
       securityContext:
         fsGroup: 1001
       volumes:
