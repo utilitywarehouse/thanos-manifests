@@ -88,7 +88,7 @@ spec:
               "metafile_exists_ttl": "2h"
               "metafile_max_size": "1MiB"
               "type": "memcached"
-            - --tracing.config-file=/etc/thanos/tracing/config.yaml
+            - --tracing.config-file=/etc/thanos-tracing/config.yaml
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -125,7 +125,7 @@ spec:
             - name: thanos-storage
               mountPath: /etc/thanos
             - name: tracing-config
-              mountPath: /etc/thanos/tracing
+              mountPath: /etc/thanos-tracing
           resources:
             requests:
               cpu: 0m
