@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       annotations:
-        injector.tumblr.com/request: vault-sidecar-aws
+        uw.systems/kyverno-inject-sidecar-request: vault-sidecar-aws
     spec:
       containers:
         - name: prometheus
