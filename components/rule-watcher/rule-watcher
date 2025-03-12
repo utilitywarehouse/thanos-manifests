@@ -13,7 +13,7 @@ trap cleanup SIGINT SIGTERM
 
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
-    find "$TEMPLATED_RULES_PATH" -type f | while read -r file; do
+    find -L "$TEMPLATED_RULES_PATH" -type f | while read -r file; do
         f="$(basename "$file")"
         # If the file has a .tmpl or .tpl extension - remove it
         f=${f%".tmpl"} && f=${f%".tpl"}
@@ -37,22 +37,42 @@ substituteENV
 # we will monitor 'DELETE,ISDIR' event of ..yyyy_mm_dd_xxx" delete
 # since its the last step in sync files operation
 # eg events sequence..
+# rules mounted via configMap:
 #     /var/thanos/rule-templates/ CREATE,ISDIR ..2024_07_29_13_28_59.2700877023
 #     /var/thanos/rule-templates/ CREATE ..data_tmp
 #     /var/thanos/rule-templates/ MOVED_FROM ..data_tmp
 #     /var/thanos/rule-templates/ MOVED_TO ..data
 #     /var/thanos/rule-templates/ DELETE test1.yaml
 #     /var/thanos/rule-templates/ DELETE,ISDIR ..2024_07_29_13_27_29.567810463
+# rules mounted via git-mirror: 
+#     /var/thanos/rule-templates/ CREATE prometheus-ksm-3475893727
+#     /var/thanos/rule-templates/ MOVED_FROM prometheus-ksm-3475893727
+#     /var/thanos/rule-templates/ MOVED_TO prometheus-ksm
 
 echo "starting rule-watcher..."
-inotifywait -m -r -e delete --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
+inotifywait -m -r -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
     echo "processing... $event $path $name";
-    if [ "$event" != "DELETE,ISDIR" ]; then
+
+    if [ "$event" != "DELETE,ISDIR" ] && [ "$event" != "MOVED_TO" ]; then
         continue
     fi
-    # match name to '..2024_07_29_13_27_29.567810463' format
-    if ! expr "$name" : '\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
+
+    # when rules are mounted from the configMap after creating symlink (moved_to event)
+    # on `..data`, any removed files are removed individually these checks are 
+    # to ensure rules rending only happens once all operation are done
+    # when rule dir is mounted via git-mirror there is no `DELETE,ISDIR` event
+    
+    # check/wait for final "DELETE,ISDIR" event dir mounted by configMap
+    if [ "$event" = "DELETE,ISDIR" ]; then
+        # match name to '..2024_07_29_13_27_29.567810463' format
+        if ! expr "$name" : '\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
+            continue
+        fi
+    fi
+
+    # skip moved_to event of dir name used by configMap
+    if [ "$event" = "MOVED_TO" ] && [ "$name" = "..data" ]; then
         continue
     fi
 
