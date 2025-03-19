@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
         - name: git-mirror
-          image: quay.io/utilitywarehouse/git-mirror:main
+          image: quay.io/utilitywarehouse/git-mirror:latest
           restartPolicy: Always
           ports:
             - name: metrics
