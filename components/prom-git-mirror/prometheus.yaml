@@ -11,7 +11,7 @@ spec:
           restartPolicy: Always
           ports:
             - name: metrics
-              containerPort: 8098
+              containerPort: 9001
               protocol: TCP
           volumeMounts:
             - name: prometheus
