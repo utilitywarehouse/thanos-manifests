@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: thanos-rule
+  name: prometheus
 spec:
   template:
     spec:
@@ -15,17 +15,17 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: data
-              mountPath: /var/thanos/data
+              mountPath: /prometheus
             - name: git-mirror-target
-              mountPath: /var/thanos/rule-templates
+              mountPath: /var/prometheus/rule-templates
         - name: rule-watcher
           volumeMounts:
-            # rules synced via git-mirror in /var/thanos/rule-templates
-            # will be symlinked to /var/thanos/data/xxxx
+            # rules synced via git-mirror in /var/prometheus/rule-templates
+            # will be symlinked to /var/prometheus/xxxx
             - name: git-mirror-target
-              mountPath: /var/thanos/rule-templates
+              mountPath: /var/prometheus/rule-templates
             - name: data
-              mountPath: /var/thanos/data
+              mountPath: /prometheus
       volumes:
         - name: git-mirror-target
           emptyDir: {}
