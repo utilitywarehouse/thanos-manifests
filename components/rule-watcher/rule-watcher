@@ -13,7 +13,31 @@ trap cleanup SIGINT SIGTERM
 
 substituteENV() {
     echo "substituting the values of environment variables in rules..."
-    find -L "$TEMPLATED_RULES_PATH" -type f | while read -r file; do
+    # when configMap is mounted kube mounts 1 file and 2 symlinks as shown below
+    # git-mirror only creates 1 symlink for a file.
+    # due to this `-L` is required in find command but when file is mounted via CF
+    # script will end up processing each CM file 3 times.
+    # to avoid this we will ignore all files with `..data/` or `..2025xx` in path 
+    # 
+    # /var/thanos/rule-templates # ls -al | grep uw-link.yaml
+    # lrwxrwxrwx    1 root   1001  19 Feb 28 13:14 uw-link.yaml -> ..data/uw-link.yaml
+    # 
+    # /var/thanos/rule-templates # ls -al ..data
+    # lrwxrwxrwx    1 root   1001  32 Mar 19 14:40 ..data -> ..2025_03_19_14_40_43.4074988545
+    # 
+    # /var/thanos/rule-templates # ls -al ..2025_03_19_14_40_43.4074988545 | grep uw-link.yaml
+    # -rw-r--r--    1 root   1001  697 Mar 19 14:40 uw-link.yaml
+    # 
+    # 
+    # $ find /var/thanos/rule-templates -type f -name '*uw-link.yaml'
+    # /var/thanos/rule-templates/..2025_03_19_14_40_43.4074988545/uw-link.yaml
+    #
+    # $ find -L /var/thanos/rule-templates -type f -name '*uw-link.yaml'
+    # /var/thanos/rule-templates/uw-link.yaml
+    # /var/thanos/rule-templates/..2025_03_19_14_40_43.4074988545/uw-link.yaml
+    # /var/thanos/rule-templates/..data/uw-link.yaml
+    #
+    find -L "$TEMPLATED_RULES_PATH" -type f -regex '.*\.\(yaml\|yml\)\(\..*\)\?' | grep -ve '\.\.' | while read -r file; do
         f="$(basename "$file")"
         # If the file has a .tmpl or .tpl extension - remove it
         f=${f%".tmpl"} && f=${f%".tpl"}
