@@ -14,7 +14,7 @@ spec:
               containerPort: 8098
               protocol: TCP
           volumeMounts:
-            - name: data
+            - name: prometheus
               mountPath: /prometheus
             - name: git-mirror-target
               mountPath: /var/prometheus/rule-templates
@@ -24,7 +24,7 @@ spec:
             # will be symlinked to /var/prometheus/xxxx
             - name: git-mirror-target
               mountPath: /var/prometheus/rule-templates
-            - name: data
+            - name: prometheus
               mountPath: /prometheus
       volumes:
         - name: git-mirror-target
