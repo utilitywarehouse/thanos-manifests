@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: git-mirror
+          image: quay.io/utilitywarehouse/git-mirror:main
+          imagePullPolicy: Always
+          restartPolicy: Always
+          ports:
+            - name: metrics
+              containerPort: 9001
+              protocol: TCP
+          volumeMounts:
+            - name: prometheus
+              mountPath: /prometheus
+            - name: git-mirror-target
+              mountPath: /var/prometheus/rule-templates
+        - name: rule-watcher
+          volumeMounts:
+            # rules synced via git-mirror in /var/prometheus/rule-templates
+            # will be symlinked to /var/prometheus/xxxx
+            - name: git-mirror-target
+              mountPath: /var/prometheus/rule-templates
+            - name: prometheus
+              mountPath: /prometheus
+      volumes:
+        - name: git-mirror-target
+          emptyDir: {}

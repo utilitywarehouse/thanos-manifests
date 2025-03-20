@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thanos-rule
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: git-mirror
+          image: quay.io/utilitywarehouse/git-mirror:main
+          imagePullPolicy: Always
+          restartPolicy: Always
+          ports:
+            - name: metrics
+              containerPort: 9001
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /var/thanos/data
+            - name: git-mirror-target
+              mountPath: /var/thanos/rule-templates
+        - name: rule-watcher
+          volumeMounts:
+            # rules synced via git-mirror in /var/thanos/rule-templates
+            # will be symlinked to /var/thanos/data/xxxx
+            - name: git-mirror-target
+              mountPath: /var/thanos/rule-templates
+            - name: data
+              mountPath: /var/thanos/data
+      volumes:
+        - name: git-mirror-target
+          emptyDir: {}
