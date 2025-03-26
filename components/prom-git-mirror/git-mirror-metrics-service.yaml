@@ -5,7 +5,7 @@ metadata:
     prometheus.io/path: /metrics
     prometheus.io/port: "9001"
     prometheus.io/scrape: "true"
-  name: git-mirror-metrics
+  name: prometheus-git-mirror-metrics
 spec:
   ports:
     - port: 9001
