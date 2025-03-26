@@ -18,13 +18,13 @@ spec:
             - name: data
               mountPath: /var/thanos/data
             - name: git-mirror-target
-              mountPath: /var/thanos/rule-templates
+              mountPath: /var/thanos/rule-templates/git-mirror
         - name: rule-watcher
           volumeMounts:
             # rules synced via git-mirror in /var/thanos/rule-templates
             # will be symlinked to /var/thanos/data/xxxx
             - name: git-mirror-target
-              mountPath: /var/thanos/rule-templates
+              mountPath: /var/thanos/rule-templates/git-mirror
             - name: data
               mountPath: /var/thanos/data
       volumes:
