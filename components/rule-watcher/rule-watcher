@@ -38,9 +38,38 @@ substituteENV() {
     # /var/thanos/rule-templates/..data/uw-link.yaml
     #
     find -L "$TEMPLATED_RULES_PATH" -type f -regex '.*\.\(yaml\|yml\)\(\..*\)\?' | grep -ve '\.\.' | while read -r file; do
-        f="$(basename "$file")"
-        # If the file has a .tmpl or .tpl extension - remove it
-        f=${f%".tmpl"} && f=${f%".tpl"}
+        # file paths are unique but file name is not hence create file name 
+        # which contains part of dir structure 
+        file_name="$(basename "$file")";
+
+        # trim common prefix and `/` if any
+        trimmed_file="${file#"$TEMPLATED_RULES_PATH"}";
+        trimmed_file="${trimmed_file#/}";
+        
+        # remove the file name to get the directory path
+        dir_path="${trimmed_file%/*}";
+
+        # if there is no dir path then just use file name
+        if [ "$dir_path" = "$file_name" ]; then
+            # if  name has a .tmpl or .tpl extension - remove it
+            file_name=${file_name%".tmpl"} && file_name=${file_name%".tpl"}
+            envsubst "$SHELL_FORMAT" < "$file" > "$RENDERED_RULES_PATH/$file_name";
+            continue
+        fi
+
+        # prefix will be 1st 2 dir so git-mirror/<repo_name>
+        prefix="$(printf %s "$dir_path" | awk -F '/' '{print $1"_"$2}')"
+
+        # extract the part to hash (the directory path part after <prefix>)
+        path_to_hash="${dir_path#"$prefix"/}"
+        hash=$(printf %s "$path_to_hash" | sha256sum | cut -c1-8)
+
+        # if name has a .tmpl or .tpl extension - remove it
+        file_name=${file_name%".tmpl"} && file_name=${file_name%".tpl"}
+
+        # Construct the new file name
+        f="${prefix}_${hash}_${file_name}"
+
         envsubst "$SHELL_FORMAT" < "$file" > "$RENDERED_RULES_PATH/$f";
     done;
     touch "$RENDERED_RULES_PATH/rule-watcher-rules-ready"
