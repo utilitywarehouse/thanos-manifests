@@ -13,4 +13,4 @@ spec:
       targetPort: metrics
       name: metrics
   selector:
-    app: thanos-rule
+    app: prometheus
