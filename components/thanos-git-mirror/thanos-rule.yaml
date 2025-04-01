@@ -14,6 +14,12 @@ spec:
             - name: metrics
               containerPort: 9001
               protocol: TCP
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              cpu: "0"
+              memory: 32Mi
           volumeMounts:
             - name: data
               mountPath: /var/thanos/data
