@@ -23,9 +23,9 @@ spec:
           startupProbe:
             tcpSocket:
               port: 9001
-            # max 300s (30 * 10) to finish its initial sync.
-            failureThreshold: 30
-            periodSeconds: 10
+            # max 300s (60 * 5) to finish its initial sync.
+            failureThreshold: 60
+            periodSeconds: 5
           volumeMounts:
             - name: prometheus
               mountPath: /prometheus/git-mirror
