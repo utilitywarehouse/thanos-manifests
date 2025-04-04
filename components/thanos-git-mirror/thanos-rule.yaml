@@ -29,7 +29,7 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - name: data
-              mountPath: /var/thanos/data
+              mountPath: /var/thanos/data/git-mirror
               subPath: git-mirror
             - name: data
               mountPath: /var/thanos/rule-templates/git-mirror
@@ -39,7 +39,7 @@ spec:
             # rules synced via git-mirror in /var/thanos/rule-templates
             # will be symlinked to /var/thanos/data/xxxx
             - name: data
-              mountPath: /var/thanos/data
+              mountPath: /var/thanos/data/git-mirror
               subPath: git-mirror
             - name: data
               mountPath: /var/thanos/rule-templates/git-mirror
