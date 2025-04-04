@@ -30,16 +30,13 @@ spec:
           volumeMounts:
             - name: prometheus
               mountPath: /prometheus
-            - name: git-mirror-target
+            - name: prometheus
               mountPath: /var/prometheus/rule-templates/git-mirror
         - name: rule-watcher
           volumeMounts:
             # rules synced via git-mirror in /var/prometheus/rule-templates
             # will be symlinked to /var/prometheus/xxxx
-            - name: git-mirror-target
+            - name: prometheus
               mountPath: /var/prometheus/rule-templates/git-mirror
             - name: prometheus
               mountPath: /prometheus
-      volumes:
-        - name: git-mirror-target
-          emptyDir: {}
