@@ -30,13 +30,17 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/thanos/data
+              subPath: git-mirror
             - name: data
               mountPath: /var/thanos/rule-templates/git-mirror
+              subPath: git-mirror/links
         - name: rule-watcher
           volumeMounts:
             # rules synced via git-mirror in /var/thanos/rule-templates
             # will be symlinked to /var/thanos/data/xxxx
             - name: data
-              mountPath: /var/thanos/rule-templates/git-mirror
-            - name: data
               mountPath: /var/thanos/data
+              subPath: git-mirror
+            - name: data
+              mountPath: /var/thanos/rule-templates/git-mirror
+              subPath: git-mirror/links
