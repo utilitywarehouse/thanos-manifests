@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
         - name: git-mirror
-          image: quay.io/utilitywarehouse/git-mirror:v0.3.0
+          image: quay.io/utilitywarehouse/git-mirror:v0.3.1
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
@@ -23,23 +23,23 @@ spec:
           startupProbe:
             tcpSocket:
               port: 9001
-            initialDelaySeconds: 10
-            # max 300s (30 * 10) to finish its initial sync.
-            failureThreshold: 30
-            periodSeconds: 10
+            # max 300s (60 * 5) to finish its initial sync.
+            failureThreshold: 60
+            periodSeconds: 5
           volumeMounts:
             - name: prometheus
-              mountPath: /prometheus
-            - name: git-mirror-target
+              mountPath: /prometheus/git-mirror
+              subPath: git-mirror
+            - name: prometheus
               mountPath: /var/prometheus/rule-templates/git-mirror
+              subPath: git-mirror/links
         - name: rule-watcher
           volumeMounts:
             # rules synced via git-mirror in /var/prometheus/rule-templates
             # will be symlinked to /var/prometheus/xxxx
-            - name: git-mirror-target
-              mountPath: /var/prometheus/rule-templates/git-mirror
             - name: prometheus
-              mountPath: /prometheus
-      volumes:
-        - name: git-mirror-target
-          emptyDir: {}
+              mountPath: /prometheus/git-mirror
+              subPath: git-mirror
+            - name: prometheus
+              mountPath: /var/prometheus/rule-templates/git-mirror
+              subPath: git-mirror/links
