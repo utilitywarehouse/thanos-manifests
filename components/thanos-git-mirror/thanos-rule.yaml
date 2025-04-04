@@ -23,7 +23,6 @@ spec:
           startupProbe:
             tcpSocket:
               port: 9001
-            initialDelaySeconds: 10
             # max 300s (30 * 10) to finish its initial sync.
             failureThreshold: 30
             periodSeconds: 10
