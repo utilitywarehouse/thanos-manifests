@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
         - name: git-mirror
-          image: quay.io/utilitywarehouse/git-mirror:v0.3.1
+          image: quay.io/utilitywarehouse/git-mirror:v0.3.2
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
