@@ -2,17 +2,21 @@
 
 apk add --no-cache  curl gettext inotify-tools;
 
+log() {
+    echo "time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "msg=$1"
+}
+
 cleanup() {
-    echo "stopping..."
+    log "stopping..."
     kill "$INOTIFY_PID"
-    echo "stopped inotifywait"
+    log "stopped inotifywait"
     exit
 }
 
 trap cleanup SIGINT SIGTERM
 
 substituteENV() {
-    echo "substituting the values of environment variables in rules..."
+    log "substituting the values of environment variables in rules..."
     # when configMap is mounted kube mounts 1 file and 2 symlinks as shown below
     # git-mirror only creates 1 symlink for a file.
     # due to this `-L` is required in find command but when file is mounted via CF
@@ -76,9 +80,9 @@ substituteENV() {
 }
 
 triggerReload() {
-    echo "triggering thanos rule reload..."
+    log "triggering thanos rule reload..."
     if [ "$(curl -s -w "%{http_code}" -X POST "localhost:$RELOAD_PORT/-/reload")" != 200 ]; then 
-        echo "error reloading alert rules"
+        log "error reloading alert rules"
     fi
 }
 
@@ -102,10 +106,10 @@ substituteENV
 #     /var/thanos/rule-templates/ MOVED_FROM prometheus-ksm-3475893727
 #     /var/thanos/rule-templates/ MOVED_TO prometheus-ksm
 
-echo "starting rule-watcher..."
+log "starting rule-watcher..."
 inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
-    echo "processing... $event $path $name";
+    log "processing... $event $path $name";
 
     if [ "$event" != "DELETE,ISDIR" ] && [ "$event" != "CREATE,ISDIR" ] && [ "$event" != "MOVED_TO" ]; then
         continue
@@ -149,4 +153,4 @@ INOTIFY_PID=$!
 
 wait $INOTIFY_PID
 
-echo "error: rule-watcher stopped"
+log "error: rule-watcher stopped"
