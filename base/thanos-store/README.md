@@ -22,19 +22,19 @@ replacements:
 
 Add Bitnami repo locally:
 
-```
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
+```console
+helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 
 Render Memcached manifest:
 
-```
-$ helm template thanos-store bitnami/memcached -f values.yaml > memcached.yaml
+```console
+helm template thanos-store bitnami/memcached -n "" -f values.yaml > memcached.yaml
 ```
 
 It comes with `namespace: default`, so remove that, I don't know if there is a
 Helm native way to do it:
 
-```
-$ sd '^\s*namespace: default\n' '' memcached.yaml
+```console
+sd '^\s*namespace: "?default"?\n' '' memcached.yaml
 ```
