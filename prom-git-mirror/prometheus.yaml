@@ -11,7 +11,7 @@ spec:
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
-            - name: metrics
+            - name: http
               containerPort: 9001
               protocol: TCP
           resources:
