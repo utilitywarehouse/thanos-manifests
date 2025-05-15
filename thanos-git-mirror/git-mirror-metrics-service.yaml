@@ -1,3 +1,4 @@
+# Headless Services used for webhook
 apiVersion: v1
 kind: Service
 metadata:
@@ -5,12 +6,14 @@ metadata:
     prometheus.io/path: /metrics
     prometheus.io/port: "9001"
     prometheus.io/scrape: "true"
-  name: thanos-git-mirror-metrics
+  name: thanos-git-mirror
 spec:
   ports:
     - port: 9001
       protocol: TCP
-      targetPort: metrics
-      name: metrics
+      targetPort: http
+      name: http
   selector:
     app: thanos-rule
+  sessionAffinity: None
+  clusterIP: None
