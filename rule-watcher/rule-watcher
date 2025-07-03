@@ -62,7 +62,7 @@ substituteENV() {
         fi
 
         # prefix will be 1st 2 dir so git-mirror/<repo_name>
-        prefix="$(printf %s "$dir_path" | awk -F '/' '{print $1"_"$2}')"
+        prefix="$(printf %s "$dir_path" | awk -F '/' '{print $1"_"$2"_"$3}')"
 
         # extract the part to hash (the directory path part after <prefix>)
         path_to_hash="${dir_path#"$prefix"/}"
@@ -105,41 +105,49 @@ substituteENV
 #     /var/thanos/rule-templates/ CREATE prometheus-ksm-3475893727
 #     /var/thanos/rule-templates/ MOVED_FROM prometheus-ksm-3475893727
 #     /var/thanos/rule-templates/ MOVED_TO prometheus-ksm
+# rules removed via git-mirror: 
+#     /var/thanos/rule-templates/git-mirror/slos/ DELETE 12d704f
 
 log "starting rule-watcher..."
 inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
     log "processing... $event $path $name";
 
-    if [ "$event" != "DELETE,ISDIR" ] && [ "$event" != "CREATE,ISDIR" ] && [ "$event" != "MOVED_TO" ]; then
-        continue
-    fi
-
     # when rules are mounted from the configMap after creating symlink (moved_to event)
     # on `..data`, any removed files are removed individually these checks are 
     # to ensure rules rending only happens once all operation are done
     # when rule dir is mounted via git-mirror there is no `DELETE,ISDIR` event
-    
-    # check/wait for final "DELETE,ISDIR" event dir mounted by configMap
-    if [ "$event" = "DELETE,ISDIR" ]; then
-        # match name to '..2024_07_29_13_27_29.567810463' format
-        if ! expr "$name" : '\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
+
+    # match to '..2024_07_29_13_27_29.567810463' format
+    configmap_dir_name_reg='\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$'
+
+    case "$event" in
+    "DELETE"|"DELETE,ISDIR")
+        # skip all DELETE events of dir path used by configMap as we only need 
+        # to process final "DELETE,ISDIR" event for CM dir
+        if expr "$(basename "$path")" : "$configmap_dir_name_reg" > /dev/null; then
             continue
         fi
-    fi
-
-    # skip create event of dir name used by configMap
-    if [ "$event" = "CREATE,ISDIR" ]; then
-        # match name to '..2024_07_29_13_27_29.567810463' format
-        if expr "$name" : '\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$' > /dev/null; then
+        ;;
+    "CREATE,ISDIR")
+        # skip create event of dir name used by configMap
+        if expr "$name" : "$configmap_dir_name_reg" > /dev/null; then
             continue
         fi
-    fi
-
-    # skip moved_to event of dir name used by configMap
-    if [ "$event" = "MOVED_TO" ] && [ "$name" = "..data" ]; then
+        ;;
+    "MOVED_TO")
+         # skip moved_to event of dir name used by configMap
+        if [ "$name" = "..data" ]; then
+            continue
+        fi
+        ;;
+    *)
+        # This is an unwanted event
         continue
-    fi
+        ;;
+    esac
+
+    log "triggering rules reload for $event on $name"
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
