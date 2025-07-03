@@ -62,7 +62,7 @@ substituteENV() {
         fi
 
         # prefix will be 1st 2 dir so git-mirror/<repo_name>
-        prefix="$(printf %s "$dir_path" | awk -F '/' '{print $1"_"$2}')"
+        prefix="$(printf %s "$dir_path" | awk -F '/' '{print $1"_"$2"_"$3}')"
 
         # extract the part to hash (the directory path part after <prefix>)
         path_to_hash="${dir_path#"$prefix"/}"
