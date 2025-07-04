@@ -3,20 +3,20 @@
 apk add --no-cache  curl gettext inotify-tools;
 
 log() {
-    echo "time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "msg=${1}"
+    echo "time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "${1}"
 }
 
 cleanup() {
-    log "stopping..."
+    log "msg=\"stopping...\""
     kill "$INOTIFY_PID"
-    log "stopped inotifywait"
+    log "msg=\"stopped inotifywait\""
     exit
 }
 
 trap cleanup SIGINT SIGTERM
 
 substituteENV() {
-    log "substituting the values of environment variables in rules..."
+    log "msg=\"substituting the values of environment variables in rules\""
     # when configMap is mounted kube mounts 1 file and 2 symlinks as shown below
     # git-mirror only creates 1 symlink for a file.
     # due to this `-L` is required in find command but when file is mounted via CF
@@ -80,9 +80,9 @@ substituteENV() {
 }
 
 triggerReload() {
-    log "triggering thanos rule reload..."
+    log "msg=\"triggering rule reload\""
     if [ "$(curl -s -w "%{http_code}" -X POST "localhost:$RELOAD_PORT/-/reload")" != 200 ]; then 
-        log "error reloading alert rules"
+        log "error: msg=\"failed to reload rules\""
     fi
 }
 
@@ -108,10 +108,10 @@ substituteENV
 # rules removed via git-mirror: 
 #     /var/thanos/rule-templates/git-mirror/slos/ DELETE 12d704f
 
-log "starting rule-watcher..."
+log "msg=\"starting rule-watcher\""
 inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
-    log "processing event=\"${event}\" path=\"${path}\" name=\"${name}\""
+    log "msg=\"processing\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # when rules are mounted from the configMap after creating symlink (moved_to event)
     # on `..data`, any removed files are removed individually these checks are 
@@ -139,7 +139,7 @@ while read -r event path name; do
 
         # before rule reload drain any queued events so far
         while read -t 1 -r te tp tn; do
-            log "skipping event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
+            log "msg=\"skipping\" event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
         done
         ;;
     "CREATE,ISDIR")
@@ -160,7 +160,7 @@ while read -r event path name; do
         ;;
     esac
 
-    log "triggering event=\"${event}\" path=\"${path}\" name=\"${name}\""
+    log "msg=\"triggering\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
@@ -174,4 +174,4 @@ INOTIFY_PID=$!
 
 wait $INOTIFY_PID
 
-log "error: rule-watcher stopped"
+log "error: msg=\"rule-watcher stopped\""
