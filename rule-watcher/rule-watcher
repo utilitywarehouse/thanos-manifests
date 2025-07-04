@@ -128,6 +128,19 @@ while read -r event path name; do
         if expr "$(basename "$path")" : "$configmap_dir_name_reg" > /dev/null; then
             continue
         fi
+
+        # when worktree (symlink) is rotated script will process 2 events `DELETE and MOVED_TO`
+        # this means we reload rules twice for same change and during that brief
+        # time all rules are deleted and later re-created
+        # This 10s delay ensures that change is completed before we re-load rules
+        # we also drain events after delay to ensure same change is not processed twice
+        # (we cant skip `DELETE` event because its also possible that worktree is just removed)
+        sleep 10s
+
+        # before rule reload drain any queued events so far
+        while read -t 1 -r te tp tn; do
+            log "skipping... $te $tp $tn"
+        done
         ;;
     "CREATE,ISDIR")
         # skip create event of dir name used by configMap
@@ -148,19 +161,6 @@ while read -r event path name; do
     esac
     
     log "triggering... $event $path $name"
-
-    # when worktree (symlink) is rotated script will process 2 events `DELETE and MOVED_TO`
-    # this means we reload rules twice for same change and during that brief
-    # time all rules are deleted and later re-created
-    # This 10s delay ensures that change is completed before we re-load rules
-    # we also drain events after delay to ensure same change is not processed twice
-    # (we cant skip `DELETE` event because its also possible that worktree is just removed)
-    sleep 10s
-
-    # before rule reload drain any queued events so far
-    while read -t 1 -r event path name; do
-        log "skipping... $event $path $name"
-    done
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
