@@ -159,13 +159,13 @@ while read -r event path name; do
         continue
         ;;
     esac
-    
+
     log "triggering event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
     rm -f "$RENDERED_RULES_PATH"/*
-    
+
     substituteENV
     triggerReload
 done &
