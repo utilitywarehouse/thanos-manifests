@@ -3,7 +3,7 @@
 apk add --no-cache  curl gettext inotify-tools;
 
 log() {
-    echo "time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "msg=$1"
+    echo "time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "msg=${1}"
 }
 
 cleanup() {
@@ -111,7 +111,7 @@ substituteENV
 log "starting rule-watcher..."
 inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
-    log "processing... $event $path $name";
+    log "processing event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # when rules are mounted from the configMap after creating symlink (moved_to event)
     # on `..data`, any removed files are removed individually these checks are 
@@ -139,7 +139,7 @@ while read -r event path name; do
 
         # before rule reload drain any queued events so far
         while read -t 1 -r te tp tn; do
-            log "skipping... $te $tp $tn"
+            log "skipping event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
         done
         ;;
     "CREATE,ISDIR")
@@ -160,7 +160,7 @@ while read -r event path name; do
         ;;
     esac
     
-    log "triggering... $event $path $name"
+    log "triggering event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
