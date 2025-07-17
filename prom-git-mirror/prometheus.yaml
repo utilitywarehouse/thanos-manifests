@@ -7,11 +7,11 @@ spec:
     spec:
       initContainers:
         - name: git-mirror
-          image: quay.io/utilitywarehouse/git-mirror:v0.3.10
+          image: quay.io/utilitywarehouse/git-mirror:v0.3.11
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
-            - name: http
+            - name: webhook
               containerPort: 9001
               protocol: TCP
           resources:
