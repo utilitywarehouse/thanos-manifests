@@ -9,7 +9,7 @@ patches:
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
-    newTag: v0.38.0
+    newTag: v0.39.1
 labels:
   - includeSelectors: true
     pairs:
