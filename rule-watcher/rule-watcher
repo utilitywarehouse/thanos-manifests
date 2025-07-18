@@ -113,52 +113,46 @@ inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATE
 while read -r event path name; do
     log "msg=\"processing\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
-    # when rules are mounted from the configMap after creating symlink (moved_to event)
-    # on `..data`, any removed files are removed individually these checks are 
-    # to ensure rules rending only happens once all operation are done
-    # when rule dir is mounted via git-mirror there is no `DELETE,ISDIR` event
-
-    # match to '..2024_07_29_13_27_29.567810463' format
-    configmap_dir_name_reg='\.\.20[0-9][0-9]_[0-9_]\+\.[0-9]\+$'
-
     case "$event" in
     "DELETE"|"DELETE,ISDIR")
-        # skip all DELETE events of dir path used by configMap as we only need 
-        # to process final "DELETE,ISDIR" event for CM dir
-        if expr "$(basename "$path")" : "$configmap_dir_name_reg" > /dev/null; then
-            continue
-        fi
-
-        # when worktree (symlink) is rotated script will process 2 events `DELETE and MOVED_TO`
-        # this means we reload rules twice for same change and during that brief
-        # time all rules are deleted and later re-created
-        # This 30s delay ensures that change is completed before we re-load rules
-        # we also drain events after delay to ensure same change is not processed twice
-        # (we cant skip `DELETE` event because its also possible that worktree is just removed)
-        sleep 30s
-
-        # before rule reload drain any queued events so far
-        while read -t 1 -r te tp tn; do
-            log "msg=\"skipping\" event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
-        done
+        debounce_needed=true
         ;;
     "CREATE,ISDIR")
-        # skip create event of dir name used by configMap
-        if expr "$name" : "$configmap_dir_name_reg" > /dev/null; then
-            continue
-        fi
+        debounce_needed=true
         ;;
     "MOVED_TO")
-         # skip moved_to event of dir name used by configMap
-        if [ "$name" = "..data" ]; then
-            continue
-        fi
+        debounce_needed=true
         ;;
     *)
         # This is an unwanted event
         continue
         ;;
     esac
+
+    # when rules are mounted from the configMap after creating symlink (moved_to event)
+    # on `..data`, any removed files are removed individually.
+    # when worktree (symlink) is rotated script will process 2 events `DELETE and MOVED_TO`
+    # this means we reload rules twice for same change and during that brief
+    # time all rules are deleted and later re-created.
+    # debounce ensures that we only reload rules once all files are changes are completed
+
+    if [ "$debounce_needed" = true ]; then
+        # Debounce: wait for a quiet period (5s) with no new events
+        debounce_window=5
+        last_event_time=$(date +%s)
+        while true; do
+            if read -t $debounce_window -r te tp tn; then
+                log "msg=\"debounce: new event\" event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
+                last_event_time=$(date +%s)
+                    continue  # keep debouncing
+            else
+                now=$(date +%s)
+                if [ $((now - last_event_time)) -ge $debounce_window ]; then
+                    break  # quiet period reached
+                fi
+            fi
+        done
+    fi
 
     log "msg=\"triggering\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
