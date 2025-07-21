@@ -111,7 +111,6 @@ substituteENV
 log "msg=\"starting rule-watcher\""
 inotifywait -m -r -e create -e delete -e moved_to --format '%e %w %f' "$TEMPLATED_RULES_PATH" |\
 while read -r event path name; do
-    log "msg=\"processing\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     case "$event" in
     "DELETE"|"DELETE,ISDIR")
@@ -124,10 +123,12 @@ while read -r event path name; do
         debounce_needed=true
         ;;
     *)
-        # This is an unwanted event
+        log "msg=\"skip unwanted event\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
         continue
         ;;
     esac
+
+    log "msg=\"process event\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # when rules are mounted from the configMap after creating symlink (moved_to event)
     # on `..data`, any removed files are removed individually.
@@ -142,7 +143,7 @@ while read -r event path name; do
         last_event_time=$(date +%s)
         while true; do
             if read -t $debounce_window -r te tp tn; then
-                log "msg=\"debounce: new event\" event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
+                log "msg=\"debounce new event\" event=\"${te}\" path=\"${tp}\" name=\"${tn}\""
                 last_event_time=$(date +%s)
                     continue  # keep debouncing
             else
@@ -154,7 +155,7 @@ while read -r event path name; do
         done
     fi
 
-    log "msg=\"triggering\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
+    log "msg=\"trigger event\" event=\"${event}\" path=\"${path}\" name=\"${name}\""
 
     # clear old rendered rules 
     # (needed as some old files might be removed)
