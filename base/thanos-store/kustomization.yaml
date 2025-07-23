@@ -10,6 +10,8 @@ images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.39.1
+  - name: docker.io/bitnami/memcached
+    newName: docker.io/bitnamilegacy/memcached
 labels:
   - includeSelectors: true
     pairs:
