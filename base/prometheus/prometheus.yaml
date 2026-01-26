@@ -135,7 +135,9 @@ spec:
         - name: prometheus
           args:
             - --config.file=/etc/prometheus-shared/prometheus.yaml
-            - --enable-feature=memory-snapshot-on-shutdown
+            # Currently, exemplars are stored only in WAL and in memory. Each exemplar consumes ~ 100 bytes.
+            # The maximum kept in memory is controlled by the max_exemplars flag that defaults to 10000, so we need ~10MB of memory for that. See https://prometheus.io/docs/prometheus/3.6/configuration/configuration/#exemplars
+            - --enable-feature=memory-snapshot-on-shutdown,exemplar-storage
             - --log.level=warn
             - --storage.tsdb.max-block-duration=2h
             - --storage.tsdb.min-block-duration=2h
