@@ -1,0 +1,11 @@
+#!/bin/sh
+
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Generate manifests and as it comes with `namespace: default` remove that
+helm template thanos-store -n "" \
+  -f values.yaml \
+  bitnami/memcached |\
+  sed -E '/^\s*namespace: "?default"?$/d' > memcached.yaml

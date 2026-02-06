@@ -8,16 +8,16 @@ metadata:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.38
-    helm.sh/chart: memcached-7.8.1
+    app.kubernetes.io/version: 1.6.40
+    helm.sh/chart: memcached-8.2.3
 spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/instance: thanos-store
       app.kubernetes.io/managed-by: Helm
       app.kubernetes.io/name: memcached
-      app.kubernetes.io/version: 1.6.38
-      helm.sh/chart: memcached-7.8.1
+      app.kubernetes.io/version: 1.6.40
+      helm.sh/chart: memcached-8.2.3
   policyTypes:
     - Ingress
     - Egress
@@ -36,8 +36,8 @@ metadata:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.38
-    helm.sh/chart: memcached-7.8.1
+    app.kubernetes.io/version: 1.6.40
+    helm.sh/chart: memcached-8.2.3
 spec:
   maxUnavailable: 1
   selector:
@@ -55,8 +55,8 @@ metadata:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.38
-    helm.sh/chart: memcached-7.8.1
+    app.kubernetes.io/version: 1.6.40
+    helm.sh/chart: memcached-8.2.3
 ---
 # Source: memcached/templates/service.yaml
 apiVersion: v1
@@ -67,10 +67,11 @@ metadata:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.38
-    helm.sh/chart: memcached-7.8.1
+    app.kubernetes.io/version: 1.6.40
+    helm.sh/chart: memcached-8.2.3
 spec:
   type: ClusterIP
+  sessionAffinity: 
   ports:
     - name: memcache
       port: 11211
@@ -90,8 +91,8 @@ metadata:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.38
-    helm.sh/chart: memcached-7.8.1
+    app.kubernetes.io/version: 1.6.40
+    helm.sh/chart: memcached-8.2.3
 spec:
   selector:
     matchLabels:
@@ -109,8 +110,8 @@ spec:
         app.kubernetes.io/instance: thanos-store
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: memcached
-        app.kubernetes.io/version: 1.6.38
-        helm.sh/chart: memcached-7.8.1
+        app.kubernetes.io/version: 1.6.40
+        helm.sh/chart: memcached-8.2.3
       annotations:
     spec:
       
@@ -139,7 +140,7 @@ spec:
       initContainers:
       containers:
         - name: memcached
-          image: docker.io/bitnami/memcached:1.6.38-debian-12-r4
+          image: registry-1.docker.io/bitnami/memcached:latest
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -162,6 +163,8 @@ spec:
               value: "false"
             - name: MEMCACHED_PORT_NUMBER
               value: "11211"
+            - name: OPENSSL_FIPS
+              value: "yes"
           ports:
             - name: memcache
               containerPort: 11211
