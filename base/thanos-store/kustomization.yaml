@@ -10,8 +10,9 @@ images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.39.2
-  - name: docker.io/bitnami/memcached
-    newName: docker.io/bitnamilegacy/memcached
+  - name: registry-1.docker.io/bitnami/memcached
+    newName: registry.uw.systems/bitnami/memcached
+    newTag: 1.6.40-debian-12-r2
 labels:
   - includeSelectors: true
     pairs:
