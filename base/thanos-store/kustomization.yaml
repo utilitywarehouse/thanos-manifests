@@ -4,15 +4,10 @@ resources:
   - memcached-peers-svc.yaml
   - memcached.yaml
   - thanos-store.yaml
-patches:
-  - path: memcached-resource-patch.yaml
 images:
   - name: thanos
     newName: quay.io/thanos/thanos
     newTag: v0.41.0
-  - name: registry-1.docker.io/bitnami/memcached
-    newName: registry.uw.systems/bitnami/memcached
-    newTag: 1.6.40-debian-12-r2
 labels:
   - includeSelectors: true
     pairs:
