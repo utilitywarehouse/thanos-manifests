@@ -56,7 +56,7 @@ spec:
             - |-
               --index-cache.config="config":
                 "addresses":
-                - "dnssrv+_memcache._tcp.$(MEMCACHED_SVC)"
+                - "dnssrvnoa+_memcache._tcp.$(MEMCACHED_SVC)"
                 "dns_provider_update_interval": "10s"
                 "max_async_buffer_size": 100000
                 "max_async_concurrency": 100
@@ -73,7 +73,7 @@ spec:
               "chunk_subrange_ttl": "24h"
               "config":
                 "addresses":
-                - "dnssrv+_memcache._tcp.$(MEMCACHED_SVC)"
+                - "dnssrvnoa+_memcache._tcp.$(MEMCACHED_SVC)"
                 "dns_provider_update_interval": "10s"
                 "max_async_buffer_size": 100000
                 "max_async_concurrency": 100
@@ -88,6 +88,10 @@ spec:
               "metafile_exists_ttl": "2h"
               "metafile_max_size": "1MiB"
               "type": "memcached"
+            - --store.enable-index-header-lazy-reader
+            - --store.enable-lazy-expanded-postings
+            - --store.index-header-lazy-download-strategy=lazy
+            - --enable-auto-gomemlimit
             - --tracing.config-file=/etc/thanos-tracing/config.yaml
           env:
             - name: POD_NAMESPACE

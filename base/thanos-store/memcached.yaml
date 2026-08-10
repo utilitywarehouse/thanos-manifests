@@ -124,7 +124,7 @@ spec:
               type: RuntimeDefault
           args:
             - -m
-            - "9216"
+            - "8192"
             - --memory-file=/cache-state/memory_file
           ports:
             - name: memcache
