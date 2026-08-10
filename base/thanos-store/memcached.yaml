@@ -1,23 +1,17 @@
 ---
-# Source: memcached/templates/networkpolicy.yaml
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   name: thanos-store-memcached
   labels:
     app.kubernetes.io/instance: thanos-store
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.40
-    helm.sh/chart: memcached-8.2.3
+    app.kubernetes.io/version: 1.6.45
 spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/instance: thanos-store
-      app.kubernetes.io/managed-by: Helm
       app.kubernetes.io/name: memcached
-      app.kubernetes.io/version: 1.6.40
-      helm.sh/chart: memcached-8.2.3
   policyTypes:
     - Ingress
     - Egress
@@ -27,17 +21,14 @@ spec:
     - ports:
         - port: 11211
 ---
-# Source: memcached/templates/pdb.yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: thanos-store-memcached
   labels:
     app.kubernetes.io/instance: thanos-store
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.40
-    helm.sh/chart: memcached-8.2.3
+    app.kubernetes.io/version: 1.6.45
 spec:
   maxUnavailable: 1
   selector:
@@ -45,7 +36,6 @@ spec:
       app.kubernetes.io/instance: thanos-store
       app.kubernetes.io/name: memcached
 ---
-# Source: memcached/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 automountServiceAccountToken: false
@@ -53,53 +43,43 @@ metadata:
   name: thanos-store-memcached
   labels:
     app.kubernetes.io/instance: thanos-store
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.40
-    helm.sh/chart: memcached-8.2.3
+    app.kubernetes.io/version: 1.6.45
 ---
-# Source: memcached/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: thanos-store-memcached
   labels:
     app.kubernetes.io/instance: thanos-store
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.40
-    helm.sh/chart: memcached-8.2.3
+    app.kubernetes.io/version: 1.6.45
 spec:
   type: ClusterIP
-  sessionAffinity: 
   ports:
     - name: memcache
       port: 11211
       targetPort: memcache
-      nodePort: null
   publishNotReadyAddresses: true
   selector:
     app.kubernetes.io/instance: thanos-store
     app.kubernetes.io/name: memcached
 ---
-# Source: memcached/templates/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: thanos-store-memcached
   labels:
     app.kubernetes.io/instance: thanos-store
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: memcached
-    app.kubernetes.io/version: 1.6.40
-    helm.sh/chart: memcached-8.2.3
+    app.kubernetes.io/version: 1.6.45
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/instance: thanos-store
       app.kubernetes.io/name: memcached
   replicas: 2
-  podManagementPolicy: "Parallel"
+  podManagementPolicy: Parallel
   serviceName: thanos-store-memcached
   updateStrategy:
     rollingUpdate: {}
@@ -108,17 +88,11 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/instance: thanos-store
-        app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: memcached
-        app.kubernetes.io/version: 1.6.40
-        helm.sh/chart: memcached-8.2.3
-      annotations:
+        app.kubernetes.io/version: 1.6.45
     spec:
-      
       automountServiceAccountToken: false
       affinity:
-        podAffinity:
-          
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -128,20 +102,14 @@ spec:
                     app.kubernetes.io/name: memcached
                 topologyKey: kubernetes.io/hostname
               weight: 1
-        nodeAffinity:
-          
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
-        supplementalGroups: []
-        sysctls: []
       serviceAccountName: thanos-store-memcached
-      enableServiceLinks: true
-      initContainers:
       containers:
         - name: memcached
-          image: registry-1.docker.io/bitnami/memcached:latest
-          imagePullPolicy: "IfNotPresent"
+          image: registry-1.docker.io/library/memcached:1.6.45
+          imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -152,19 +120,12 @@ spec:
             runAsGroup: 1001
             runAsNonRoot: true
             runAsUser: 1001
-            seLinuxOptions: {}
             seccompProfile:
               type: RuntimeDefault
           args:
-            - /run.sh
+            - -m
+            - "9216"
             - --memory-file=/cache-state/memory_file
-          env:
-            - name: BITNAMI_DEBUG
-              value: "false"
-            - name: MEMCACHED_PORT_NUMBER
-              value: "11211"
-            - name: OPENSSL_FIPS
-              value: "yes"
           ports:
             - name: memcache
               containerPort: 11211
@@ -174,10 +135,8 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
-            exec:
-              command:
-                - pgrep
-                - memcached
+            tcpSocket:
+              port: memcache
           readinessProbe:
             failureThreshold: 6
             initialDelaySeconds: 5
@@ -190,27 +149,21 @@ spec:
             preStop:
               exec:
                 command:
-                  - /bin/bash
+                  - /bin/sh
                   - -ec
                   - |
-                    /usr/bin/pkill -10 memcached
-                    sleep 60s
+                    kill -USR1 1
+                    sleep 60
           resources:
+            requests:
+              cpu: 0m
+              memory: 8Mi
             limits:
               cpu: 2
-              memory: 1Gi
+              memory: 3Gi
           volumeMounts:
             - name: data
               mountPath: /cache-state
-            - name: empty-dir
-              mountPath: /opt/bitnami/memcached/conf
-              subPath: app-conf-dir
-            - name: empty-dir
-              mountPath: /tmp
-              subPath: tmp-dir
-      volumes:
-        - name: empty-dir
-          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -219,7 +172,7 @@ spec:
           app.kubernetes.io/name: memcached
       spec:
         accessModes:
-          - "ReadWriteOnce"
+          - ReadWriteOnce
         resources:
           requests:
-            storage: "10Gi"
+            storage: 10Gi

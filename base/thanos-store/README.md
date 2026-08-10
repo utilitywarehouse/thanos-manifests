@@ -20,6 +20,5 @@ replacements:
 
 ## Updating Memcached
 
-```console
-make update-memcached
-```
+The memcached StatefulSet uses the vanilla `memcached` image (no bitnami/helm).
+To bump the version, update the image tag in `memcached.yaml`.
