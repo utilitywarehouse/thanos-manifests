@@ -71,6 +71,7 @@ spec:
             - --label=rule_replica="$(POD_NAME)"
             - --label=uw_environment="$(UW_ENVIROMENT)"
             - --objstore.config-file=/etc/thanos/config.yaml
+            - --enable-auto-gomemlimit
             - --tracing.config-file=/etc/thanos-tracing/config.yaml
           env:
             - name: ALERTMANAGER_URL

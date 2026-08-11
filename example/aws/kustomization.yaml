@@ -1,22 +1,21 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
+resources:
   - ../../base/
 #  - github.com/utilitywarehouse/thanos-manifests/base
 
   # Optional, only required to enable remote-write
   - ../../base/thanos-receive
 #  - github.com/utilitywarehouse/thanos-manifests/base/thanos-receive
-resources:
   - prometheus-ingress.yaml
   - thanos-query-ingress.yaml
   - thanos-rule-ingress.yaml
-patchesStrategicMerge:
-  - prometheus.yaml
-  - thanos-compact.yaml
-  - thanos-receive.yaml # Optional, only required to enable remote-write
-  - thanos-rule.yaml
-  - thanos-store.yaml
+patches:
+  - path: prometheus.yaml
+  - path: thanos-compact.yaml
+  - path: thanos-receive.yaml # Optional, only required to enable remote-write
+  - path: thanos-rule.yaml
+  - path: thanos-store.yaml
 configMapGenerator:
   # description: application alerts handled by thanos-rule
   # used-by: Thanos Rule
