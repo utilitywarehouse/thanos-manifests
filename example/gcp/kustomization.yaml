@@ -1,16 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
+resources:
   - ../../base/
 #  - github.com/utilitywarehouse/thanos-manifests/base
-resources:
   - prometheus-ingress.yaml
   - thanos-query-ingress.yaml
   - thanos-rule-ingress.yaml
-patchesStrategicMerge:
-  - gcp-credentials-patch.yaml
-  - prometheus.yaml
-  - thanos-rule.yaml
+patches:
+  - path: gcp-credentials-patch.yaml
+  - path: prometheus.yaml
+  - path: thanos-rule.yaml
 secretGenerator:
   # description: credentials for access to object storage
   # used-by: Prometheus, Thanos Store, Thanos Compact
