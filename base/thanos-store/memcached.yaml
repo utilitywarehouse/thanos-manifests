@@ -106,6 +106,45 @@ spec:
         fsGroup: 1001
         fsGroupChangePolicy: Always
       serviceAccountName: thanos-store-memcached
+      initContainers:
+        - name: clear-corrupt-restart-meta
+          image: registry-1.docker.io/library/memcached:1.6.45
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile:
+              type: RuntimeDefault
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              META=/cache-state/memory_file.meta
+              if [ -e "$META" ]; then
+                first_line="$(head -n 1 "$META")"
+                last_byte="$(tail -c 1 "$META")"
+                if [ "$first_line" != "Tmain" ] || [ "$last_byte" != "" ]; then
+                  echo "removing corrupt memcached restart metadata: $META"
+                  rm -f "$META"
+                fi
+              fi
+          resources:
+            requests:
+              cpu: 0m
+              memory: 8Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: data
+              mountPath: /cache-state
       containers:
         - name: memcached
           image: registry-1.docker.io/library/memcached:1.6.45
