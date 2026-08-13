@@ -89,6 +89,7 @@ spec:
               "metafile_max_size": "1MiB"
               "type": "memcached"
             - --store.enable-index-header-lazy-reader
+            - --store.index-header-lazy-reader-idle-timeout=1m
             - --store.enable-lazy-expanded-postings
             - --store.index-header-lazy-download-strategy=lazy
             - --enable-auto-gomemlimit
