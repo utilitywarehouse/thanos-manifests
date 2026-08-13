@@ -60,7 +60,6 @@ spec:
             - --retention.resolution-raw=1y
             - --wait
             - --wait-interval=1h
-            - --enable-auto-gomemlimit
           ports:
             - name: http
               containerPort: 10902

@@ -102,7 +102,6 @@ spec:
             - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
             - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
             - --tsdb.path=/prometheus/data
-            - --enable-auto-gomemlimit
           startupProbe:
             exec:
               command:
