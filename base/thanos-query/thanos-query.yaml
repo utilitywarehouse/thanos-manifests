@@ -59,7 +59,6 @@ spec:
             - --query.replica-label=rule_replica
             - --store.response-timeout=15s
             - --endpoint.sd-config-file=/etc/thanos/store-sd.yaml
-            - --enable-auto-gomemlimit
             - --tracing.config-file=/etc/thanos-tracing/config.yaml
           env:
             - name: POD_NAMESPACE

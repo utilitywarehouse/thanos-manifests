@@ -88,11 +88,6 @@ spec:
               "metafile_exists_ttl": "2h"
               "metafile_max_size": "1MiB"
               "type": "memcached"
-            - --store.enable-index-header-lazy-reader
-            - --store.index-header-lazy-reader-idle-timeout=1m
-            - --store.enable-lazy-expanded-postings
-            - --store.index-header-lazy-download-strategy=lazy
-            - --enable-auto-gomemlimit
             - --tracing.config-file=/etc/thanos-tracing/config.yaml
           env:
             - name: POD_NAMESPACE
