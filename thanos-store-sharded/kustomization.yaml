@@ -1,14 +1,13 @@
 # Kustomize component that turns the vanilla base/thanos-store into a sharded
-# store-gateway. Consume alongside base/thanos-store:
+# store-gateway. Consume it alongside base/thanos-store:
 #
 #   resources:
-#     - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=X
+#     - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=MYREF
 #   components:
-#     - github.com/utilitywarehouse/thanos-manifests/thanos-store-sharded?ref=X
+#     - github.com/utilitywarehouse/thanos-manifests/thanos-store-sharded?ref=MYREF
 #
-# Each pod derives its shard from its ordinal (shard = ordinal / R), writes a
-# per-pod --selector.relabel-config file, and starts thanos with it. Override
-# replicas / REPLICAS_PER_SHARD / SHARD_COUNT per environment as needed.
+# See README.md in this directory for the full consumption guide (required
+# overlay bits, env defaults, and how the sharding works).
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 configMapGenerator:
