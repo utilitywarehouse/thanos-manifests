@@ -1,0 +1,21 @@
+# Kustomize component that turns the vanilla base/thanos-store into a sharded
+# store-gateway. Consume alongside base/thanos-store:
+#
+#   resources:
+#     - github.com/utilitywarehouse/thanos-manifests/base/thanos-store?ref=X
+#   components:
+#     - github.com/utilitywarehouse/thanos-manifests/thanos-store-sharded?ref=X
+#
+# Each pod derives its shard from its ordinal (shard = ordinal / R), writes a
+# per-pod --selector.relabel-config file, and starts thanos with it. Override
+# replicas / REPLICAS_PER_SHARD / SHARD_COUNT per environment as needed.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+configMapGenerator:
+  - name: shard-entrypoint
+    files:
+      - entrypoint.sh
+    options:
+      disableNameSuffixHash: true
+patches:
+  - path: shard-patch.yaml
