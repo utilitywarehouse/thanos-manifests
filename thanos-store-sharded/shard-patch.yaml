@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thanos-store
+spec:
+  # Default shape: 4 shards x 2 replicas. Override per environment.
+  replicas: 8
+  template:
+    spec:
+      # Soft even node spread: R=2 copies of a shard land on different nodes.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: thanos-store
+      containers:
+        - name: thanos-store
+          # Override the image ENTRYPOINT (/bin/thanos) with the sharding
+          # resolver that computes the pod's shard from its ordinal, writes
+          # the relabel file, then execs thanos with
+          # --selector.relabel-config-file.
+          command: ["/bin/sh", "/etc/thanos-store/entrypoint.sh"]
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: REPLICAS_PER_SHARD
+              value: "2"
+            - name: SHARD_COUNT
+              value: "4"
+          volumeMounts:
+            - name: shard-entrypoint
+              mountPath: /etc/thanos-store
+              readOnly: true
+            - name: shard-relabel
+              mountPath: /var/thanos/shard
+      volumes:
+        - name: shard-entrypoint
+          configMap:
+            name: shard-entrypoint
+        - name: shard-relabel
+          emptyDir: {}
