@@ -68,6 +68,18 @@ REPLICAS_PER_SHARD`. Keep the same shape across environments and scale
 by size, not by structure: sharding, replication, and limits must match
 between dev and prod, or prod becomes the first place a new shape runs.
 
+## Rolling out PVC or replica-shape changes
+
+Bumping `replicas` syncs like any StatefulSet change. Changing the data
+PVC (via `volumeClaimTemplates` in the consuming overlay) does not:
+Kubernetes forbids patching a live StatefulSet's volumeClaimTemplates,
+and existing PVC claims can only grow, never shrink. Roll such a change
+by deleting the StatefulSet and letting the deployer recreate it (Argo
+CD selfHeal, kube-applier, or plain `kubectl apply`). The `data` volume
+only caches per-shard index headers, so pods re-download theirs from
+object storage on startup; if the claim size must change, delete the
+old PVCs too (the new claims are provisioned fresh).
+
 ## How it works
 
 The entrypoint (mounted from a generated ConfigMap) computes each pod's
