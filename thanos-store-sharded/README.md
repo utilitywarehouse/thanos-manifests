@@ -89,6 +89,9 @@ this design:
 - `SHARD_COUNT` / `REPLICAS_PER_SHARD` come only from the StatefulSet
   env; the entrypoint has no fallback defaults, so the env is the single
   source of truth.
+- The entrypoint ConfigMap keeps a stable name (no content hash), so
+  editing `entrypoint.sh` will not trigger a pod rollout on its own;
+  run a manual rollout restart after script changes.
 
 Verify a deployment by checking that each pod's
 `thanos_bucket_store_blocks_loaded` is roughly total-blocks / N, and

@@ -18,8 +18,9 @@ spec:
       containers:
         - name: thanos-store
           # Override the image ENTRYPOINT (/bin/thanos) with the sharding
-          # resolver that computes SHARD_INDEX, writes the relabel file, then
-          # execs thanos with --selector.relabel-config-file.
+          # resolver that computes the pod's shard from its ordinal, writes
+          # the relabel file, then execs thanos with
+          # --selector.relabel-config-file.
           command: ["/bin/sh", "/etc/thanos-store/entrypoint.sh"]
           env:
             - name: POD_NAME
