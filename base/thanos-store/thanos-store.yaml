@@ -10,6 +10,11 @@ metadata:
     app: thanos-store
   name: thanos-store
 spec:
+  # Headless: A-record lookups return every pod IP, so thanos-query can
+  # dial all shards (with dns+ store-sd entries). A ClusterIP service
+  # pins each gRPC connection to one pod, so queries against a sharded
+  # store silently miss the other shards' blocks.
+  clusterIP: None
   ports:
     - port: 10901
       protocol: TCP
