@@ -5,8 +5,10 @@ endpoints:
   - address: prometheus-1.thanos-sidecar:10901
   # Thanos Receive store gateway for short term metrics
   - address: thanos-receive:10901
-  # Store gateway for long term metrics
-  - address: thanos-store:10901
+  # Store gateway for long term metrics. dns+ pairs with the headless
+  # store Service (clusterIP: None): it resolves every pod IP so the
+  # query reaches all pods, not one load-balanced target.
+  - address: dns+thanos-store:10901
   # Thanos ruler exposes synthetic time series of the form
   # ```
   # ALERTS{alertname="<alert name>", alertstate="pending|firing", <additional # alert labels>}
@@ -18,4 +20,4 @@ endpoints:
   # Another instance of Prometheus/Thanos to be included in the queries
   - address: prometheus-0.thanos-sidecar.example-namespace:10901
   - address: prometheus-1.thanos-sidecar.example-namespace:10901
-  - address: thanos-store.example-namespace:10901
+  - address: dns+thanos-store.example-namespace:10901
