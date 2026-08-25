@@ -54,6 +54,8 @@ the overlay:
 - Resources/limits sized for the environment
 - Storage and tracing configs (e.g. a `thanos-storage-config` reference
   replacing the base's placeholder)
+- A headless store Service and `dns+` store-sd entries, so query
+  servers reach every shard (see below)
 
 Defaults the component sets, and how to override them:
 
@@ -67,6 +69,42 @@ Defaults the component sets, and how to override them:
 REPLICAS_PER_SHARD`. Keep the same shape across environments and scale
 by size, not by structure: sharding, replication, and limits must match
 between dev and prod, or prod becomes the first place a new shape runs.
+
+## Headless store Service and dns+ store-sd entries
+
+Sharding splits blocks across pods, so query servers must reach every
+pod. Two requirements:
+
+- The store Service must be headless, otherwise kube-proxy pins each
+  gRPC connection to one shard and queries silently miss the other
+  shards' blocks (gaps that move around as connections land elsewhere):
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: thanos-store
+spec:
+  clusterIP: None  # headless: A-record returns every pod IP
+  ports:
+    - port: 10901
+      targetPort: grpc
+  selector:
+    app: thanos-store
+```
+
+- The store addresses in thanos-query's `--endpoint.sd-config-file`
+  must use `dns+` so thanos-query dials every pod and merges their
+  blocks:
+
+```yaml
+endpoints:
+  - address: dns+thanos-store.sys-prom:10901
+```
+
+Spot a missing wiring by checking the query server's store API client
+count equals the number of shard pods (not 1), and that store-only
+queries return the same result on repeated runs.
 
 ## Rolling out PVC or replica-shape changes
 
@@ -107,5 +145,6 @@ this design:
 
 Verify a deployment by checking that each pod's
 `thanos_bucket_store_blocks_loaded` is roughly total-blocks / N, and
-that a query server pointed at the (single) store service still returns
-results merged across all shards.
+that every query server reaching the store service actually dials all
+shards: headless Service + `dns+` store-sd entries, per the headless
+Service section above.
